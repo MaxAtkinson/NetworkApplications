@@ -2,11 +2,19 @@
   "name": "NetworkApplications",
   "version": "1.0.0",
   "description": "Coursework for Network Applications.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node lib/index.js",
+    "build": "babel src/ -d lib/"
+  },
+  "babel": {
+    "presets": ["env"]
   },
   "repository": "git@github.com:MaxAtkinson/NetworkApplications.git",
   "author": "Max Atkinson <max@Maxs-MacBook-Pro-4.local>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  }
 }
