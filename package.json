@@ -4,7 +4,7 @@
   "description": "Coursework for Network Applications.",
   "main": "lib/index.js",
   "scripts": {
-    "start": "node lib/index.js",
+    "start": "yarn build && node lib/index.js",
     "build": "babel src/ -d lib/"
   },
   "babel": {
