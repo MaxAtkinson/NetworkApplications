@@ -24,7 +24,13 @@ app.get('/socket.io-client/socket.io.min.js', (req, res) => {
 
 // Set up socket.io handlers
 io.on('connection', function (socket) {
+    // HANDY:
+    // https://socket.io/docs/emit-cheatsheet/
     console.log('new connection');
+
+    socket.join('defaultRoom');
+    io.to('defaultRoom').emit('defaultRoomJoined', 'you joined the defaultRoom room');
+
     socket.emit('test', { test: 'stuff' });
     socket.on('message', (msg) => {
         console.log('received: ' + msg)
