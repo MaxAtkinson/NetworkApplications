@@ -17,15 +17,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Serve the socket.io client from node_modules
+app.get('/socket.io-client/socket.io.min.js', (req, res) => {
+    res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.min.js'));
+});
+
 // Set up socket.io handlers
 io.on('connection', function (socket) {
-    socket.on('name entered', (name) => {
-        socket.name = name;
-        socket.emit('userJoined', socket.name);
+    console.log('new connection');
+    socket.emit('test', { test: 'stuff' });
+    socket.on('message', (msg) => {
+        console.log('received: ' + msg)
     });
 });
 
 // Listen on our port
-app.listen(app.get('port'), () => {
+server.listen(app.get('port'), () => {
     console.log(`Listening at localhost:${app.get('port')}`);
 });
