@@ -18,13 +18,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Serve the socket.io client from node_modules
-app.get('/socket.io-client/socket.io.min.js', (req, res) => {
+app.get('/socket.io-client.js', (req, res) => {
     res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.min.js'));
 });
 
 // Set up socket.io handlers
 io.on('connection', function (socket) {
-    // HANDY:
     // https://socket.io/docs/emit-cheatsheet/
     console.log('new connection');
 
@@ -39,5 +38,5 @@ io.on('connection', function (socket) {
 
 // Listen on our port
 server.listen(app.get('port'), () => {
-    console.log(`Listening at localhost:${app.get('port')}`);
+    console.log(`Listening at localhost:${app.get('port')}/`);
 });

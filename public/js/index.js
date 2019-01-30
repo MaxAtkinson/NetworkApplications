@@ -5,11 +5,13 @@ socket.on('connect', connectHandler);
 socket.on(`${room}Joined`, console.log);
 
 function connectHandler() {
-    console.log('Connected to socket.io server');
+    console.log('Connected to socket.io server.');
 }
 
-function handleMessage() {
+function handleSendMessage() {
     const message = document.getElementById('input').value;
-    console.log(message);
-    socket.emit('message', message);
+    if (message.trim() !== '') {
+        console.log(message);
+        socket.emit('message', message);
+    }
 }
