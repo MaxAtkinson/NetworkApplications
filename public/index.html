@@ -12,9 +12,9 @@
     <body>
         Chat app goes here.
     </body>
-    <form onSubmit="handleSendMessage(event)">
+    <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
         <input id="input" type="text" />
-        <input type="submit" onClick="handleSendMessage(event)" value="send" />
+        <input type="submit" onClick="OutboundEventHandlers.handleSendMessage(event)" value="send" />
     </form>
     <div id="chat"></div>
 </html>
