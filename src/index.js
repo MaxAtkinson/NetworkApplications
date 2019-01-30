@@ -29,10 +29,11 @@ io.on('connection', function (socket) {
 
     socket.join('defaultRoom');
     io.to('defaultRoom').emit('defaultRoomJoined', 'someone joined the room');
-
+    io.to('defaultRoom').emit('message', 'welcome!');
     socket.emit('test', { test: 'only you can see this' });
     socket.on('message', (msg) => {
-        console.log('received: ' + msg)
+        // socket.room should be dynamic
+        io.to('defaultRoom').emit('message', msg);
     });
 });
 
