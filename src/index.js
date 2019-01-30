@@ -29,9 +29,9 @@ io.on('connection', function (socket) {
     console.log('new connection');
 
     socket.join('defaultRoom');
-    io.to('defaultRoom').emit('defaultRoomJoined', 'you joined the defaultRoom room');
+    io.to('defaultRoom').emit('defaultRoomJoined', 'someone joined the room');
 
-    socket.emit('test', { test: 'stuff' });
+    socket.emit('test', { test: 'only you can see this' });
     socket.on('message', (msg) => {
         console.log('received: ' + msg)
     });
