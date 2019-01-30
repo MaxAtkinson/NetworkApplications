@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Cool Chat App</title>
+        <link rel="stylesheet" type="text/css" href="./css/styles.css">
         <script type="text/javascript" src="/socket.io-client.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -11,7 +12,9 @@
     <body>
         Chat app goes here.
     </body>
-    <input id="input" type="text" />
-    <input type="button" onClick="handleSendMessage()" value="send" />
+    <form onSubmit="handleSendMessage(event)">
+        <input id="input" type="text" />
+        <input type="submit" onClick="handleSendMessage(event)" value="send" />
+    </form>
     <div id="chat"></div>
 </html>
