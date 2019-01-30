@@ -10,7 +10,7 @@ function connectHandler() {
 }
 
 function handleSendMessage() {
-    const message = document.getElementById('input').value;
+    const message = $('#input').val();
     if (message.trim() !== '') {
         console.log(message);
         socket.emit('message', message);
@@ -18,7 +18,6 @@ function handleSendMessage() {
 }
 
 function handleReceiveMessage(msg) {
-    const para = document.createElement('p');
-    para.appendChild(document.createTextNode(msg));
-    document.getElementById('chat').appendChild(para);
+    const $para = $('<p></p>').text(msg);
+    $('#chat').append($para);
 }
