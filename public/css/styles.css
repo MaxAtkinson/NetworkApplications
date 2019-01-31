@@ -1,22 +1,23 @@
 #chat {
-    width: 80%;
-    height: 90%;
+    height: calc(90% - 56px);
     overflow-y: auto;
     word-wrap:break-word;
-    float: left;
-    background-color: blue;
+    background-color: lightgray;
 }
 
 #channel-panel {
-    width: 20%;
-    height: 100%;
-    background-color: red;
-    float: left;
+    overflow-y: auto;
+    word-wrap:break-word;
+    height: calc(90% - 56px);
+    background-color: gray;
+}
+
+#info-panel {
+    height: 10%;
+    background-color: grey;
 }
 
 #user-input {
-    display:inline-block;
+    padding-top: 1%;
     height: 10%;
-    width: 80%;
-    background-color: yellow;
 }

@@ -1,25 +1,79 @@
 <html>
     <head>
-        <title>Cool Chat App</title>
+        <title>CoolChat</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="./css/styles.css">
         <script type="text/javascript" src="/socket.io-client.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
                 crossorigin="anonymous">
         </script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        </script>
         <script type="text/javascript" src="./js/index.js"></script>
     </head>
     <body>
-        <div>
-            <div id="channel-panel">
-                <h1>Channels</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="/assets/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+                    &nbsp;CoolChat
+                </a>
+                <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown link
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                    </li>
+                </ul>
+                </div>-->
             </div>
-            <div id="chat"></div>
-            <div id="user-input">
-                <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
-                    <input id="input" type="text" />
-                    <input type="submit" onClick="OutboundEventHandlers.handleSendMessage(event)" value="send" />
-                </form>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div id="channel-panel" class="col-md-2">
+                    <h1>Channels</h1>
+                    <p>channel 1</p>
+                    <p>channel 2</p>
+                    <p>channel 3</p>
+                    <p>channel 4</p>
+                    <p>channel n</p>
+                </div>
+                <div id="chat" class="col-md-10">
+                    <h1>Messages</h1>
+                </div>
+                <div id="info-panel" class="col-md-2">
+                    <h1>&nbsp;</h1>
+                </div>
+                <div id="user-input" class="col-md-10">
+                    <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
+                        <div class="input-group mb-3">
+                            <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="Message">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">Send</button>
+                            </div>
+                        </div>
+                        <!-- <small>Enter your message here. Press enter to send!</small> -->
+                    </form>
+                </div>
             </div>
         </div>
     </body>
