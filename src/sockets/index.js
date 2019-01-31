@@ -1,7 +1,3 @@
-export function getChannel(socket) {
-    return Object.keys(socket.rooms).find(r => r);
-}
-
 export default function configureSockets(io) {
     // Set up socket.io handlers
     io.on('connection', function (socket) {
@@ -20,7 +16,12 @@ export default function configureSockets(io) {
             socket.leaveAll();
             socket.join(channel, () => {
                 console.log(getChannel(socket));
+                socket.emit('channelChanged', channel);
             });
         });
     });
+}
+
+function getChannel(socket) {
+    return Object.keys(socket.rooms).find(r => r);
 }
