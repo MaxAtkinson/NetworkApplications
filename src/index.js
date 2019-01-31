@@ -3,6 +3,7 @@ import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
 import socketio from 'socket.io';
+import { getChannel } from './sockets';
 
 // Init web app
 const app = express();
@@ -25,15 +26,21 @@ app.get('/socket.io-client.js', (req, res) => {
 // Set up socket.io handlers
 io.on('connection', function (socket) {
     // https://socket.io/docs/emit-cheatsheet/
-    console.log('new connection');
 
     socket.join('defaultRoom');
     io.to('defaultRoom').emit('defaultRoomJoined', 'someone joined the room');
     io.to('defaultRoom').emit('message', 'welcome!');
     socket.emit('test', { test: 'only you can see this' });
+
     socket.on('message', (msg) => {
-        // socket.room should be dynamic
-        io.to('defaultRoom').emit('message', msg);
+        io.to(getChannel(socket)).emit('message', msg);
+    });
+
+    socket.on('channelChange', (channel) => {
+        socket.leaveAll();
+        socket.join(channel, () => {
+            console.log(getChannel(socket));
+        });
     });
 });
 
