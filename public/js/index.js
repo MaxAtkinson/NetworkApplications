@@ -1,15 +1,23 @@
 const socket = io.connect('http://localhost:3000');
 const room = 'defaultRoom';
 let $chat;
+let $input;
 
 $(function() {
     $chat = $('#chat');
+    $input = $('#input');
+    $input.focus();
 });
 
 class DomUtils {
     static scrollToBottom() {
         $chat.scrollTop($chat.prop('scrollHeight'));
     }
+}
+
+class Http {
+    static loadChannels() {}
+    static loadMessagesForChannel(channel) {}
 }
 
 class InboundEventHandlers {
@@ -31,11 +39,9 @@ class OutboundEventHandlers {
 
     static handleSendMessage(e) {
         e.preventDefault();
-        const $input = $('#input');
         const message = $input.val();
 
         if (message.trim() !== '') {
-            console.log(message);
             socket.emit('message', message);
             $input.val('');
         }

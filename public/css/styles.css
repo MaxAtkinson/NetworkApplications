@@ -9,15 +9,19 @@
     overflow-y: auto;
     word-wrap:break-word;
     height: calc(90% - 56px);
-    background-color: gray;
+    background-color: #5f27cd;
+    color: white;
 }
 
 #info-panel {
     height: 10%;
-    background-color: grey;
+    background-color: #341f97;
+    color: white;
 }
 
 #user-input {
     padding-top: 1%;
     height: 10%;
 }
+
+/* https://flatuicolors.com/palette/ca */

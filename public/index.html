@@ -19,36 +19,34 @@
                     <img src="/assets/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
                     &nbsp;CoolChat
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown link
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                    </li>
-                </ul>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="#">Pricing</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown link
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>
         <div class="container-fluid">
             <div class="row">
+
                 <div id="channel-panel" class="col-md-2">
                     <h1>Channels</h1>
                     <p onClick="OutboundEventHandlers.handleChangeChannel('channel1')">channel 1</p>
@@ -57,12 +55,19 @@
                     <p>channel 4</p>
                     <p>channel n</p>
                 </div>
+
                 <div id="chat" class="col-md-10">
                     <h1>Messages</h1>
                 </div>
+
                 <div id="info-panel" class="col-md-2">
-                    <h1>&nbsp;</h1>
+                    <small>
+                        <p class="text-center">
+                            Enter your message and press the Enter key to send!
+                        </p>
+                    </small>
                 </div>
+
                 <div id="user-input" class="col-md-10">
                     <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
                         <div class="input-group mb-3">
@@ -71,9 +76,9 @@
                                 <button class="btn btn-outline-secondary" type="submit">Send</button>
                             </div>
                         </div>
-                        <!-- <small>Enter your message here. Press enter to send!</small> -->
                     </form>
                 </div>
+
             </div>
         </div>
     </body>
