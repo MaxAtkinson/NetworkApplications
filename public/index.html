@@ -1,17 +1,15 @@
-<!DOCTYPE html5>
-<html>
+<html lang="en">
     <head>
         <title>CoolChat</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="./css/styles.css">
-        <script type="text/javascript" src="/socket.io-client.js"></script>
+        <script src="/socket.io-client.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
                 crossorigin="anonymous">
         </script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        </script>
-        <script type="text/javascript" src="./js/index.js"></script>
+        <script src="./js/index.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -50,11 +48,6 @@
 
                 <div id="channel-panel" class="col-md-2">
                     <h1>Channels</h1>
-                    <p onClick="OutboundEventHandlers.handleChangeChannel('channel1')">channel 1</p>
-                    <p>channel 2</p>
-                    <p>channel 3</p>
-                    <p>channel 4</p>
-                    <p>channel n</p>
                 </div>
 
                 <div id="chat" class="col-md-10">
@@ -62,17 +55,17 @@
                 </div>
 
                 <div id="info-panel" class="col-md-2">
-                    <small>
-                        <p class="text-center">
+                    <p class="text-center">
+                        <small>
                             Enter your message and press the Enter key to send!
-                        </p>
-                    </small>
+                        </small>
+                    </p>
                 </div>
 
                 <div id="user-input" class="col-md-10">
                     <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
                         <div class="input-group mb-3">
-                            <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="Message">
+                            <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="input">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" type="submit">Send</button>
                             </div>

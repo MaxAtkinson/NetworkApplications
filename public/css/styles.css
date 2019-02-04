@@ -11,17 +11,34 @@
     height: calc(90% - 56px);
     background-color: #5f27cd;
     color: white;
+    border-right: 2px black solid;
+}
+
+#channel-panel p {
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#channel-panel p:hover {
+    background-color: #341f97;
+    cursor: pointer;
 }
 
 #info-panel {
     height: 10%;
     background-color: #341f97;
     color: white;
+    border-right: 2px black solid;
 }
 
 #user-input {
+    border-top: 2px black solid;
     padding-top: 1%;
     height: 10%;
+}
+
+.channel.active {
+    background-color: black;
 }
 
 /* https://flatuicolors.com/palette/ca */
