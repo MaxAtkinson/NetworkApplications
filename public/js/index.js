@@ -9,25 +9,28 @@ class DomUtils {
     }
 
     static addChannelsToPanel(channels) {
-        let $channel = $('<p/>');
+        let $channel = $('<p/>').addClass('channel');
         const $channelPanel = $('#channel-panel');
 
         channels.forEach((channel) => {
             $channel = $channel.clone()
                 .text(channel.name)
-                .attr('id', 'channel' + channel._id)
-                .attr('class', 'channel');
+                .attr('id', 'channel' + channel._id);
             $channel.click(() => OutboundEventHandlers.handleChangeChannel(channel._id));
             $channelPanel.append($channel);
         });
+
+        if (channels.length > 0) {
+            OutboundEventHandlers.handleChangeChannel(channels[0]._id);
+        }
     }
 
     static addMessagesToChat(messages) {}
 
     static setActiveChannel(channelId) {
         const $allChannels = $('.channel');
-        $allChannels.removeClass('active');
         const $channel = $('#channel' + channelId);
+        $allChannels.removeClass('active');
         $channel.addClass('active');
     }
 }
@@ -104,13 +107,12 @@ class OutboundEventHandlers {
 }
 
 
-$(function() {
+$(function main() {
     $chat = $('#chat');
     $input = $('#input');
     $input.focus();
     Http.loadChannels(DomUtils.addChannelsToPanel);
+    socket.on('connect', InboundEventHandlers.handleConnected);
+    socket.on('message', InboundEventHandlers.handleMessageReceived);
+    socket.on(`${room}Joined`, console.log);
 });
-
-socket.on('connect', InboundEventHandlers.handleConnected);
-socket.on('message', InboundEventHandlers.handleMessageReceived);
-socket.on(`${room}Joined`, console.log);
