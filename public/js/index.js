@@ -22,6 +22,8 @@ class DomUtils {
         });
     }
 
+    static addMessagesToChat(messages) {}
+
     static setActiveChannel(channelId) {
         const $allChannels = $('.channel');
         $allChannels.removeClass('active');
@@ -87,6 +89,7 @@ class OutboundEventHandlers {
     static handleChangeChannel(channelId) {
         socket.emit('channelChange', channelId);
         DomUtils.setActiveChannel(channelId);
+        // Http.loadMessagesForChannel(DomUtils.addMessagesToChat);
     }
 
     static handleSendMessage(e) {
