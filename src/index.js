@@ -3,7 +3,8 @@ import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
 import expressValidator from 'express-validator/check';
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
+import session from "express-session";
 import socketio from 'socket.io';
 
 
@@ -13,7 +14,7 @@ import configureSockets from './sockets';
 const app = express();
 const server = http.Server(app)
 const io = socketio.listen(server);
-const db_url = "mongodb://localhost:27017/chatapp"
+const db_url = "mongodb://localhost:27017/chatapp";
 
 configureSockets(io);
 
@@ -36,7 +37,7 @@ app.get('/socket.io-client.js', (req, res) => {
 
 
 import configureAuth    from './auth'
-configureAuth(app,path,bodyParser,express, db_url);
+configureAuth(app,path,bodyParser,express,bcrypt,session,db_url);
 
 
 // Listen on our port
