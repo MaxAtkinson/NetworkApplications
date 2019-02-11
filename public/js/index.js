@@ -37,21 +37,7 @@ class DomUtils {
 
 class Http {
     static loadChannels(onLoad) {
-        // Todo: Use $.ajax here and pass onLoad to its response handler
-        onLoad([
-            {
-                _id: 1,
-                name: 'Channel 1' // Mock data
-            },
-            {
-                _id: 2,
-                name: 'Channel 2'
-            },
-            {
-                _id: 3,
-                name: 'Channel 3'
-            }
-        ]);
+        $.get('/channels', onLoad);
     }
 
     static loadMessagesForChannel(channelId, onLoad) {

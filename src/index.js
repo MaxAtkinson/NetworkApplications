@@ -2,22 +2,18 @@ import path from 'path';
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
-import expressValidator from 'express-validator/check';
-import bcrypt from "bcrypt";
-import session from "express-session";
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 import socketio from 'socket.io';
-
 
 import configureSockets from './sockets';
 
 // Init web app
 const app = express();
-const server = http.Server(app)
+const server = http.Server(app);
 const io = socketio.listen(server);
-const db_url = "mongodb://localhost:27017/chatapp";
-
+const db_url = 'mongodb://localhost:27017/chatapp';
 configureSockets(io);
-
 
 // Set app props
 app.set('port', 3000);
@@ -29,14 +25,30 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 console.log(__dirname);
 
-
 // Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
     res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.min.js'));
 });
 
+app.get('/channels', (req, res) => {
+    res.json([
+        {
+            _id: 1,
+            name: 'Channel 1' // Mock data
+        },
+        {
+            _id: 2,
+            name: 'Channel 2'
+        },
+        {
+            _id: 3,
+            name: 'Channel 3'
+        }
+    ]);
+});
 
-import configureAuth    from './auth'
+
+import configureAuth from './auth'
 configureAuth(app,path,bodyParser,express,bcrypt,session,db_url);
 
 

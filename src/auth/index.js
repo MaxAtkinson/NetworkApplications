@@ -1,7 +1,8 @@
+import  { MongoClient } from 'mongodb';
+
 export default function configureAuth(app,path,bodyParser,express,session,bcrypt,db_url)
 {
     const saltRounds = 12;
-    var MongoClient = require('mongodb').MongoClient;
 
     app.get('/auth/login',(req,res) =>
     {
