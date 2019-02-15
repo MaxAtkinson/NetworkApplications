@@ -90,6 +90,14 @@ class OutboundEventHandlers {
             $input.val('');
         }
     }
+
+
+
+    // Functions for submitting the server
+    static loginFormSubmit()
+    {
+        
+    }
 }
 
 

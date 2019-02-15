@@ -20,8 +20,6 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                 var decodedUser = decodeJWT(jwt,req.cookies['ChatAppToken']).payload;
                 
                 console.log(decodedUser.payload);
-
-
                 // Now check whether the user exists in database 
 
                 MongoClient.connect(db_url,function(error,db)
@@ -35,18 +33,17 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                     {
                         if (error) 
                         {
-                        console.log("Database query error");
-                        throw error;
-                        return;
+                            console.log("Database query error");
+                            return;
                         }
                 
-                    if (result.length != 1)
-                    {
-                        console.log("User not database")
-                        return;
-                    }
+                        if (result.length != 1)
+                        {
+                            console.log("User not database")
+                            return;
+                        }
 
-                    // User is then within database so redirect to the main page
+                        // User is then within database so redirect to the main page
                         res.redirect('/');    
                     });
                 });
