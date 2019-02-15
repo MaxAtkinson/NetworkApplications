@@ -25,10 +25,12 @@
     "babel": "^6.23.0",
     "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.1",
     "http": "0.0.0",
+    "jsonwebtoken": "^8.4.0",
     "mongodb": "^3.1.13",
     "socketio": "^1.0.0"
   }

@@ -1,12 +1,63 @@
 import  { MongoClient } from 'mongodb';
+import  fs              from "fs";
+import  path            from "path"
+import  cookieParser    from "cookie-parser"
 
-export default function configureAuth(app,path,bodyParser,express,session,bcrypt,db_url)
+export default function configureAuth(app,path,bodyParser,express,session,bcrypt,jwt,db_url)
 {
     const saltRounds = 12;
 
+    app.use(cookieParser());
+
     app.get('/auth/login',(req,res) =>
     {
-        res.sendFile(path.join(__dirname, '../../public/auth/login.xhtml'));
+        console.log(req.cookies);
+        //Get the cookie if it exists then we check if the JWT exists and is valid and then redirect to the homepage
+        if (!(typeof req.cookies["ChatAppToken"] === 'undefined'))
+        {
+            if (verifyJWT(jwt,req.cookies['ChatAppToken']))
+            {
+                var decodedUser = decodeJWT(jwt,req.cookies['ChatAppToken']).payload;
+                
+                console.log(decodedUser.payload);
+
+
+                // Now check whether the user exists in database 
+
+                MongoClient.connect(db_url,function(error,db)
+                {
+                    var dbo = db.db("chatapp");
+            
+                    var query = {};
+                    query['username'] =  decodedUser.username;
+                    
+                    dbo.collection('users').find(query).toArray(function(error,result)
+                    {
+                        if (error) 
+                        {
+                        console.log("Database query error");
+                        throw error;
+                        return;
+                        }
+                
+                    if (result.length != 1)
+                    {
+                        console.log("User not database")
+                        return;
+                    }
+
+                    // User is then within database so redirect to the main page
+                        res.redirect('/');    
+                    });
+                });
+            }
+        }
+        // User unauthenticated so just return the login page
+        else
+        {
+        
+            res.sendFile(path.join(__dirname, '../../public/auth/login.xhtml'));
+        }
     });
 
     app.post('/auth/login', function(req,res)
@@ -48,9 +99,13 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                     }
 
                     //Create the session and redirect to the home page if
-                    // the password hash has returned true
+                    // the password hash compare has returned true
                     if (result == true)
                     {
+                        // Create a valid JWT token for the user and then store this in an http cookie on user side
+                        var token = createJWT(jwt,this.user);
+                        res.cookie("ChatAppToken", token,{httpOnly:true,}); // Need to add the secure bit here when we come to SSL connections
+                        
                         console.log(" was successful");
                         res.redirect('/');
                     }
@@ -59,7 +114,7 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                         console.log(" was unsuccessful");
                     }
 
-                });
+                }.bind({user : result[0]})); // Need to pass the user object in to allow for the 
             });
      
         
@@ -184,7 +239,58 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
  
 }
 
-    //Session Authentication
+
+// initialiseJWT imports the private and public key into the node.js script
+// and sets the signing options
+function createJWT(jwt,user)
+{
+    var privateKeyPath =  path.join(__dirname, '../../src/auth/private.key');
+    var publicKeyPath  =  path.join(__dirname, '../../src/auth/public.key');
+    var PrivateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    var PublicKey  = fs.readFileSync(publicKeyPath, 'utf8');
+
+    var signerOptions =
+    {
+        issuer: "Chat App",
+        audience: "http://localhost:3000",
+        expiresIn:  "12h",
+        algorithm:  "RS256"
+    }
+
+    var generatedToken = jwt.sign(user, PrivateKey,signerOptions);
+
+    return generatedToken;
+
+    console.log("Created Token for user: " + user.username);
+
+}
+
+
+
+function verifyJWT(jwt,token)
+{
+    var publicKeyPath =  path.join(__dirname, '../../src/auth/public.key');
+    var PublicKey = fs.readFileSync(publicKeyPath,'utf8');
+
+    var signerOptions =
+    {
+        issuer: "Chat App",
+        audience: "http://localhost:3000",
+        expiresIn:  "12h",
+        algorithm:  ["RS256"]
+    }
+    
+   
+    return jwt.verify(token, PublicKey,signerOptions);
+}
+
+function decodeJWT(jwt,token)
+{
+    return jwt.decode(token, {complete: true});
+}
+
+
+/*    //Session Authentication
 function createSession(user)
 {
     const uuidv4 = require('uuid/v4');
@@ -221,3 +327,4 @@ function createSession(user)
         }
     });
 }
+*/

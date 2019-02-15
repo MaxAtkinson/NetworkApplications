@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import session from 'express-session';
+import jwt     from 'jsonwebtoken'
 import socketio from 'socket.io';
 
 import configureSockets from './sockets';
@@ -49,8 +50,7 @@ app.get('/channels', (req, res) => {
 
 
 import configureAuth from './auth'
-configureAuth(app,path,bodyParser,express,bcrypt,session,db_url);
-
+configureAuth(app,path,bodyParser,express,session,bcrypt,jwt,db_url);
 
 // Listen on our port
 server.listen(app.get('port'), () => {
