@@ -76,13 +76,13 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                 if (error) 
                 {
                     console.log("Database query error");
-                    throw error;
                     return;
                 }
                 
                 if (result.length != 1)
                 {
                     console.log("User not database")
+                    res.json({success: "Incorrect Username/Password", status: 401});
                     return;
                 }
                 console.log("login for user: " + result[0].username);
@@ -91,7 +91,6 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                     if (error)
                     {   
                         console.log("Hashing error\n\r");
-                        throw error;
                         return;
                     }
 
@@ -104,10 +103,12 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                         res.cookie("ChatAppToken", token,{httpOnly:true,}); // Need to add the secure bit here when we come to SSL connections
                         
                         console.log(" was successful");
-                        res.redirect('/');
+                        res.json({success: "Login Successful", status: 200});
+                        //res.redirect('/');
                     }
                     else
                     {
+                        res.json({success: "Incorrect Username/Password", status: 401});
                         console.log(" was unsuccessful");
                     }
 

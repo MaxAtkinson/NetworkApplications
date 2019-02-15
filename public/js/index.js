@@ -33,6 +33,7 @@ class DomUtils {
         $allChannels.removeClass('active');
         $channel.addClass('active');
     }
+
 }
 
 class Http {
@@ -91,12 +92,45 @@ class OutboundEventHandlers {
         }
     }
 
-
-
     // Functions for submitting the server
     static loginFormSubmit()
     {
-        
+        // Submit the form with AJAX and then 
+        $.ajax({
+            type:       "POST",
+            url:        "auth/login",
+            dataType:   "json",
+            data:       $("#loginForm").serialize(),
+            success: function(data)
+            {
+                // When the status is 200, we have a valid username and password
+                if (data.status == 200)
+                {
+                    // Reset the contents of the form incase this is used later
+
+
+                    // Hide the login modal as we have a valid username and password response
+                    $("#login-modal").modal('hide');   
+                    document.getElementById('loginStatus').innerHTML = "My Profile";
+                    
+                }
+                // We have an invalid response to the username and password and display an error message to user
+                else
+                {  
+                    console.log(data);
+                    $('#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                    //Reset the password field
+                    $('#password').val(''); 
+                }
+            },
+            error: function(data)
+            {
+                console.log(data);
+                $('$#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                alert(data.responseText);
+            }
+
+        });
     }
 }
 

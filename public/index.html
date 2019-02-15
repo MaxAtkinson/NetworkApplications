@@ -27,7 +27,7 @@
                             <a class="nav-link" href="#">Settings</a>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link btn" data-toggle="modal" data-target="#login-modal">Login</button>
+                            <button class="nav-link btn" data-toggle="modal" data-target="#login-modal" id="loginStatus">Login</button>
                             <!--<a class="nav-link" href="/auth/login">Login</a>-->
                         </li>
                     </ul>
@@ -71,7 +71,7 @@
                             <h4 class="modal-title">Login to Chatapp</h4>
                         </div>
                         <div class="modal-body>">
-                            <form action="auth/login" method="POST" id="login">
+                            <form id="loginForm" name="loginForm">
                                 <div class = "form-group">
                                     <label for="email">Email:</label>
                                     <input type="email" class="form-control" id="email"  name="email" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
@@ -85,7 +85,7 @@
                         <div class="modal-footer">
                             <a href="auth/register"><button type="button" class="btn btn-default">Register</button></a>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
-                            <button type="submit" form="login" value="submit" class="btn btn-success">Login</button>
+                            <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.loginFormSubmit()">Login</button>
                         </div>
                     </div>
                 </div>
