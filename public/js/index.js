@@ -132,6 +132,43 @@ class OutboundEventHandlers {
 
         });
     }
+
+    static addchannel(){
+        
+        $.ajax({
+            type:       "POST",
+            url:        "",
+            dataType:   "json",
+            data:       $("#channelForm").serialize(),
+            success: function(data)
+            {
+                // When the status is 200, there isn't a duplicate channel
+                if (data.status == 200)
+                {
+
+
+                    // Hide the login modal as we have a valid username and password response
+                    $("#channel-modal").modal('hide');   
+                  //  document.getElementById('channelStatus').innerHTML = "My Profile";
+                    
+                }
+                // We have an invalid response to the username and password and display an error message to user
+                else
+                {  
+                    console.log(data);
+                    $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                }
+            },
+            error: function(data)
+            {
+                console.log(data);
+                $('$#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                alert(data.responseText);
+            }
+
+        });
+
+    }
 }
 
 

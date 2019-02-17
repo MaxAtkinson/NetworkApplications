@@ -22,6 +22,7 @@
     "babel-preset-env": "^1.7.0"
   },
   "dependencies": {
+    "all": "0.0.0",
     "babel": "^6.23.0",
     "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",

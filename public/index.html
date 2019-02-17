@@ -20,9 +20,6 @@
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Settings</a>
                         </li>
@@ -47,7 +44,7 @@
 
                 <div id="info-panel" class="col-md-2">
                     <p class="text-center">
-                        I need to put an add channel button here
+                        <button id="channel-button" data-toggle="modal" data-target="#channel-modal" id="channelStatus">Add Channel</button>
                     </p>
                 </div>
 
@@ -73,11 +70,11 @@
                         <div class="modal-body>">
                             <form id="loginForm" name="loginForm">
                                 <div class = "form-group">
-                                    <label for="email">Email:</label>
+                                    <label for="email"> Email:</label>
                                     <input type="email" class="form-control" id="email"  name="email" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
                                 </div>
                                 <div class = "form-group">
-                                        <label for="password">Password:</label>
+                                        <label for="password"> Password:</label>
                                         <input type="password" class="form-control" name="password" id="password" placeholder="Password"></input>
                                 </div>
                             </form>
@@ -90,6 +87,31 @@
                     </div>
                 </div>
             </div>
+
+            <!--add channel Modal-->
+            <div class="modal fade" id="channel-modal" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add Channel</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <form id="channelForm" name="channelForm">
+                                <div class = "form-group">
+                                    <label for="channel name"> Channel Name:</label>
+                                    <input type="text" class="form-control" id="channelname"  name="channelname" aria-describedby="channelHelp" placeholder="Boaty McBoatface"></input>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
+                            <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.addchannel()">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </body>
 </html>
