@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 // import db from './db';
 import configureSockets from './sockets';
 import configureAuth from './auth'
+import db from './db';
 
 // Init web app
 const app = express();
