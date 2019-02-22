@@ -6,7 +6,8 @@ import session from 'express-session';
 import jwt from 'jsonwebtoken'
 import socketio from 'socket.io';
 import cookieParser from 'cookie-parser';
-
+// TODO: db module then:
+// import db from './db';
 import configureSockets from './sockets';
 import configureAuth from './auth'
 
@@ -15,7 +16,6 @@ const app = express();
 const server = http.Server(app);
 const io = socketio.listen(server);
 const dbUrl = 'mongodb://localhost:27017/chatapp';
-configureSockets(io);
 
 // Set app props
 app.set('port', 3000);
@@ -25,6 +25,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+configureSockets(io);
+configureAuth(app, jwt, dbUrl);
 
 // Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
@@ -32,6 +34,7 @@ app.get('/socket.io-client.js', (req, res) => {
 });
 
 app.get('/channels', (req, res) => {
+    // TODO: DB logic to fetch channels
     res.json([
         {
             _id: 1,
@@ -48,8 +51,36 @@ app.get('/channels', (req, res) => {
     ]);
 });
 
+app.post('/channels', (req, res) => {
+    // TODO: DB logic to add channel
+    /* 
+        db.channels.insert(req.body.channel, (err, result) => {
+            if (!err) {
+                res.json(result);
+            } else {
+                res.status(400);
+                res.json(err);
+            }
+        });
+    */
+   res.send('not implemented');
+});
 
-configureAuth(app, jwt, dbUrl);
+app.get('/channels/:id/messages', (req, res) => {
+    // TODO: DB logic to get last 20 messages from channel with id :id
+    /* 
+        const channelId = req.params.id;
+        db.messages.find({ channel._id: channelId }, { limit: 20, sort: 'timestamp' }, (err, results) => {
+            if (!err) {
+                res.json(results);
+            } else {
+                res.status(404);
+                res.json(err);
+            }
+        });
+    */
+   res.send('not implemented');
+});
 
 // Listen on our port
 server.listen(app.get('port'), () => {
