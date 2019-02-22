@@ -1,19 +1,16 @@
-import  { MongoClient } from 'mongodb';
-import  fs              from "fs";
-import  path            from "path"
-import  cookieParser    from "cookie-parser"
+import { MongoClient } from 'mongodb';
+import fs from 'fs';
+import path from 'path';
 
-export default function configureAuth(app,path,bodyParser,express,session,bcrypt,jwt,db_url)
+export default function configureAuth(app, jwt, dbUrl)
 {
     const saltRounds = 12;
-
-    app.use(cookieParser());
-
+    
     app.get('/auth/login',(req,res) =>
     {
         console.log(req.cookies);
         //Get the cookie if it exists then we check if the JWT exists and is valid and then redirect to the homepage
-        if (!(typeof req.cookies["ChatAppToken"] === 'undefined'))
+        if (!(typeof req.cookies['ChatAppToken'] === 'undefined'))
         {
             if (verifyJWT(jwt,req.cookies['ChatAppToken']))
             {
@@ -22,9 +19,9 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                 console.log(decodedUser.payload);
                 // Now check whether the user exists in database 
 
-                MongoClient.connect(db_url,function(error,db)
+                MongoClient.connect(dbUrl,function(error,db)
                 {
-                    var dbo = db.db("chatapp");
+                    var dbo = db.db('chatapp');
             
                     var query = {};
                     query['username'] =  decodedUser.username;
@@ -33,13 +30,13 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                     {
                         if (error) 
                         {
-                            console.log("Database query error");
+                            console.log('Database query error');
                             return;
                         }
                 
                         if (result.length != 1)
                         {
-                            console.log("User not database")
+                            console.log('User not database')
                             return;
                         }
 
@@ -65,9 +62,9 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
         /*Need to sanitise the inputs */
 
         //Connect to the database
-        MongoClient.connect(db_url,function(error,db)
+        MongoClient.connect(dbUrl,function(error,db)
         {
-            var dbo = db.db("chatapp");
+            var dbo = db.db('chatapp');
             
             var query = {}
             query['email'] = email;
@@ -75,22 +72,22 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
             {
                 if (error) 
                 {
-                    console.log("Database query error");
+                    console.log('Database query error');
                     return;
                 }
                 
                 if (result.length != 1)
                 {
-                    console.log("User not database")
-                    res.json({success: "Incorrect Username/Password", status: 401});
+                    console.log('User not database')
+                    res.json({success: 'Incorrect Username/Password', status: 401});
                     return;
                 }
-                console.log("login for user: " + result[0].username);
+                console.log('login for user: ' + result[0].username);
                 bcrypt.compare(password,result[0].password,function(error, result)
                 {
                     if (error)
                     {   
-                        console.log("Hashing error\n\r");
+                        console.log('Hashing error\n\r');
                         return;
                     }
 
@@ -100,16 +97,16 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                     {
                         // Create a valid JWT token for the user and then store this in an http cookie on user side
                         var token = createJWT(jwt,this.user);
-                        res.cookie("ChatAppToken", token,{httpOnly:true,}); // Need to add the secure bit here when we come to SSL connections
+                        res.cookie('ChatAppToken', token,{httpOnly:true,}); // Need to add the secure bit here when we come to SSL connections
                         
-                        console.log(" was successful");
-                        res.json({success: "Login Successful", status: 200});
+                        console.log(' was successful');
+                        res.json({success: 'Login Successful', status: 200});
                         //res.redirect('/');
                     }
                     else
                     {
-                        res.json({success: "Incorrect Username/Password", status: 401});
-                        console.log(" was unsuccessful");
+                        res.json({success: 'Incorrect Username/Password', status: 401});
+                        console.log(' was unsuccessful');
                     }
 
                 }.bind({user : result[0]})); // Need to pass the user object in to allow for the 
@@ -132,7 +129,7 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
         // Disp[]
         if ((!req.body.username) ||(!req.body.email))
         {
-            //res.status("400");
+            //res.status('400');
             //res.sendFile(path.join(__dirname, '../public/404.xhtml'));
         }
     
@@ -158,17 +155,17 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
         if (password != confirmPassword)
         {
             req.session.succsss = false;
-            console.log("Password Match Failed");
+            console.log('Password Match Failed');
         }
     
         var databaseObject;
     
         // Connect to the database
-        MongoClient.connect(db_url,function(error,db)
+        MongoClient.connect(dbUrl, function(error,db)
         {
             if (error)
             {
-                console.log("Problem connecting to database");
+                console.log('Problem connecting to database');
                 throw error;
             }
     
@@ -179,11 +176,11 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
             // Check that the username doesn't already exist
             dbo.collection('users').find(query).toArray(function(error,result)
             {
-                console.log("Users:");
+                console.log('Users:');
                 console.log(result);
                 if (result[0])
                 {
-                    console.log("Username already exists\n\r");
+                    console.log('Username already exists\n\r');
                     return;
                 }
             
@@ -193,11 +190,11 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                 // Check if the email address doesn't already exist
                 dbo.collection('users').find(query).toArray(function(error,result)
                 {
-                    console.log("Email:");
+                    console.log('Email:');
                     console.log(result);
                     if (result[0])
                     {
-                        console.log("Email Address already in use\n\r");
+                        console.log('Email Address already in use\n\r');
                         return;
                     }
 
@@ -215,12 +212,12 @@ export default function configureAuth(app,path,bodyParser,express,session,bcrypt
                         {
                             if (error)
                             {
-                                console.log("Problem adding user");
+                                console.log('Problem adding user');
                                 console.log(error);
                             }
                             else
                             {
-                                console.log("New User: " + newUser.username + " added." );
+                                console.log('New User: ' + newUser.username + ' added.' );
                                 res.redirect('/auth/login');
                             }
                         
@@ -249,17 +246,17 @@ function createJWT(jwt,user)
 
     var signerOptions =
     {
-        issuer: "Chat App",
-        audience: "http://localhost:3000",
-        expiresIn:  "12h",
-        algorithm:  "RS256"
+        issuer: 'Chat App',
+        audience: 'http://localhost:3000',
+        expiresIn:  '12h',
+        algorithm:  'RS256'
     }
 
     var generatedToken = jwt.sign(user, PrivateKey,signerOptions);
 
     return generatedToken;
 
-    console.log("Created Token for user: " + user.username);
+    console.log('Created Token for user: ' + user.username);
 
 }
 
@@ -272,10 +269,10 @@ function verifyJWT(jwt,token)
 
     var signerOptions =
     {
-        issuer: "Chat App",
-        audience: "http://localhost:3000",
-        expiresIn:  "12h",
-        algorithm:  ["RS256"]
+        issuer: 'Chat App',
+        audience: 'http://localhost:3000',
+        expiresIn:  '12h',
+        algorithm:  ['RS256']
     }
     
    
@@ -295,33 +292,33 @@ function createSession(user)
 
     var session_secret = uuidv4;
     var sessionData = {};
-    sessionData["cookieName"]       = "chatapp_session",
-    sessionData["session_secret"]   = session_secret,
-    sessionData["duration"]         = 60 * 10 * 1000 //10 minutes active session
-    sessionData["activeDuration"]   = 60 * 60 * 1000 // 1 hour active session
+    sessionData['cookieName']       = 'chatapp_session',
+    sessionData['session_secret']   = session_secret,
+    sessionData['duration']         = 60 * 10 * 1000 //10 minutes active session
+    sessionData['activeDuration']   = 60 * 60 * 1000 // 1 hour active session
 
     //
     user.session        = session_secret;
     user.lastlogintime  = new Date();
 
-    var dbo = db.db("chatapp");
+    var dbo = db.db('chatapp');
             
     var query = {}
     query['email'] = user.email;
     var newValues;
-    newValues["session_uuid"] = session_secret;
-    newValues["lastlogintime"] = new Date();
+    newValues['session_uuid'] = session_secret;
+    newValues['lastlogintime'] = new Date();
     dbo.collection('users').updateOne(query,newValues,function(error,result)
     {
         if (error) 
         {
-            console.log("Database query error");
+            console.log('Database query error');
             throw error;
             return;
         }
         else if (result.n != 1)
         {
-            console.log("Not updated properly\n\r");
+            console.log('Not updated properly\n\r');
         }
     });
 }

@@ -2,29 +2,29 @@ import path from 'path';
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
-import bcrypt from 'bcrypt';
 import session from 'express-session';
-import jwt     from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import socketio from 'socket.io';
+import cookieParser from 'cookie-parser';
 
 import configureSockets from './sockets';
+import configureAuth from './auth'
 
 // Init web app
 const app = express();
 const server = http.Server(app);
 const io = socketio.listen(server);
-const db_url = 'mongodb://localhost:27017/chatapp';
+const dbUrl = 'mongodb://localhost:27017/chatapp';
 configureSockets(io);
 
 // Set app props
 app.set('port', 3000);
 
 // Set up middleware - we want at least static file serving and json parsing middleware
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-
-console.log(__dirname);
 
 // Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
@@ -49,8 +49,7 @@ app.get('/channels', (req, res) => {
 });
 
 
-import configureAuth from './auth'
-configureAuth(app,path,bodyParser,express,session,bcrypt,jwt,db_url);
+configureAuth(app, jwt, dbUrl);
 
 // Listen on our port
 server.listen(app.get('port'), () => {
