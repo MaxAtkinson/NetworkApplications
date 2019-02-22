@@ -10,6 +10,7 @@ import cookieParser from 'cookie-parser';
 // import db from './db';
 import configureSockets from './sockets';
 import configureAuth from './auth'
+import db from './db';
 
 // Init web app
 const app = express();
@@ -26,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 configureSockets(io);
-configureAuth(app, jwt, dbUrl);
+// configureAuth(app, jwt, dbUrl);
 
 // Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
