@@ -7,7 +7,11 @@ import bcrypt from 'bcrypt';
 export default function configureAuth(app, jwt, dbUrl) {
     const saltRounds = 12;
 
+ 
+
     app.get('/auth/login', (req, res) => {
+        var dbo = db();
+        var query = {};
         console.log(req.cookies);
         //Get the cookie if it exists then we check if the JWT exists and is valid and then redirect to the homepage
         if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
@@ -16,10 +20,6 @@ export default function configureAuth(app, jwt, dbUrl) {
 
                 console.log(decodedUser.payload);
                 // Now check whether the user exists in database 
-
-
-                var dbo = db();
-                var query = {};
                 query['username'] = decodedUser.username;
 
                 dbo.collection('users').find(query).toArray(function (error, result) {
@@ -53,51 +53,51 @@ export default function configureAuth(app, jwt, dbUrl) {
         /*Need to sanitise the inputs */
 
         //Connect to the database
-        MongoClient.connect(dbUrl, function (error, db) {
-            var dbo = db.db('chatapp');
+        var dbo = db();
+        var query = {};
+        
+      
+        query['email'] = email;
+        dbo.collection('users').find(query).toArray(function (error, result) {
+            if (error) {
+                console.log('Database query error');
+                return;
+            }
 
-            var query = {}
-            query['email'] = email;
-            dbo.collection('users').find(query).toArray(function (error, result) {
+            if (result.length != 1) {
+                console.log('User not database')
+                res.json({ success: 'Incorrect Username/Password', status: 401 });
+                return;
+            }
+            console.log('login for user: ' + result[0].username);
+            bcrypt.compare(password, result[0].password, function (error, result) {
                 if (error) {
-                    console.log('Database query error');
+                    console.log('Hashing error\n\r');
                     return;
                 }
 
-                if (result.length != 1) {
-                    console.log('User not database')
+                //Create the session and redirect to the home page if
+                // the password hash compare has returned true
+                if (result == true) {
+                    // Create a valid JWT token for the user and then store this in an http cookie on user side
+                    var token = createJWT(jwt, this.user);
+                    res.cookie('ChatAppToken', token, { httpOnly: true, }); // Need to add the secure bit here when we come to SSL connections
+
+                    console.log(' was successful');
+                    res.json({ success: 'Login Successful', status: 200 });
+                    //res.redirect('/');
+                }
+                else {
                     res.json({ success: 'Incorrect Username/Password', status: 401 });
-                    return;
+                    console.log(' was unsuccessful');
                 }
-                console.log('login for user: ' + result[0].username);
-                bcrypt.compare(password, result[0].password, function (error, result) {
-                    if (error) {
-                        console.log('Hashing error\n\r');
-                        return;
-                    }
 
-                    //Create the session and redirect to the home page if
-                    // the password hash compare has returned true
-                    if (result == true) {
-                        // Create a valid JWT token for the user and then store this in an http cookie on user side
-                        var token = createJWT(jwt, this.user);
-                        res.cookie('ChatAppToken', token, { httpOnly: true, }); // Need to add the secure bit here when we come to SSL connections
-
-                        console.log(' was successful');
-                        res.json({ success: 'Login Successful', status: 200 });
-                        //res.redirect('/');
-                    }
-                    else {
-                        res.json({ success: 'Incorrect Username/Password', status: 401 });
-                        console.log(' was unsuccessful');
-                    }
-
-                }.bind({ user: result[0] })); // Need to pass the user object in to allow for the 
-            });
-
-
-
+            }.bind({ user: result[0] })); // Need to pass the user object in to allow for the 
         });
+
+
+
+        
 
     });
 
@@ -141,64 +141,65 @@ export default function configureAuth(app, jwt, dbUrl) {
         var databaseObject;
 
         // Connect to the database
-        MongoClient.connect(dbUrl, function (error, db) {
-            if (error) {
-                console.log('Problem connecting to database');
-                throw error;
+        var dbo = db();
+        var query = {};
+      
+        // if (error) {
+        //     console.log('Problem connecting to database');
+        //     throw error;
+        // }
+
+
+        query['username'] = username;
+
+        // Check that the username doesn't already exist
+        dbo.collection('users').find(query).toArray(function (error, result) {
+            console.log('Users:');
+            console.log(result);
+            if (result[0]) {
+                console.log('Username already exists\n\r');
+                return;
             }
 
-            var dbo = db.db('chatapp');
             var query = {};
-            query['username'] = username;
+            query['email'] = email;
 
-            // Check that the username doesn't already exist
+            // Check if the email address doesn't already exist
             dbo.collection('users').find(query).toArray(function (error, result) {
-                console.log('Users:');
+                console.log('Email:');
                 console.log(result);
                 if (result[0]) {
-                    console.log('Username already exists\n\r');
+                    console.log('Email Address already in use\n\r');
                     return;
                 }
 
-                var query = {};
-                query['email'] = email;
+                //BCrypt the password into a hash and then create the user
+                bcrypt.hash(password, saltRounds, function (error, hashResult) {
+                    //Format the new user
+                    var newUser = {};
+                    newUser.username = username;
+                    newUser.email = email;
+                    newUser.password = hashResult;
 
-                // Check if the email address doesn't already exist
-                dbo.collection('users').find(query).toArray(function (error, result) {
-                    console.log('Email:');
-                    console.log(result);
-                    if (result[0]) {
-                        console.log('Email Address already in use\n\r');
-                        return;
-                    }
-
-                    //BCrypt the password into a hash and then create the user
-                    bcrypt.hash(password, saltRounds, function (error, hashResult) {
-                        //Format the new user
-                        var newUser = {};
-                        newUser.username = username;
-                        newUser.email = email;
-                        newUser.password = hashResult;
-
-                        // Create the new user
-                        dbo.collection('users').insertOne(newUser, function (error, result) {
-                            if (error) {
-                                console.log('Problem adding user');
-                                console.log(error);
-                            }
-                            else {
-                                console.log('New User: ' + newUser.username + ' added.');
-                                res.redirect('/auth/login');
-                            }
-
-                        });
-
-                        db.close();
+                    // Create the new user
+                    dbo.collection('users').insertOne(newUser, function (error, result) {
+                        if (error) {
+                            console.log('Problem adding user');
+                            console.log(error);
+                        }
+                        else {
+                            console.log('New User: ' + newUser.username + ' added.');
+                            res.redirect('/auth/login');
+                        }
 
                     });
+
+                    //db.close();
+
                 });
             });
         });
+        
     });
 
 
@@ -256,20 +257,16 @@ function decodeJWT(jwt, token) {
 function createSession(user)
 {
     const uuidv4 = require('uuid/v4');
-
     var session_secret = uuidv4;
     var sessionData = {};
     sessionData['cookieName']       = 'chatapp_session',
     sessionData['session_secret']   = session_secret,
     sessionData['duration']         = 60 * 10 * 1000 //10 minutes active session
     sessionData['activeDuration']   = 60 * 60 * 1000 // 1 hour active session
-
     //
     user.session        = session_secret;
     user.lastlogintime  = new Date();
-
     var dbo = db.db('chatapp');
-
     var query = {}
     query['email'] = user.email;
     var newValues;
