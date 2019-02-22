@@ -155,15 +155,16 @@ class OutboundEventHandlers {
                 // We have an invalid response to the username and password and display an error message to user
                 else
                 {  
-                    console.log(data);
+             //       console.log(data);
                     $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
                 }
             },
             error: function(data)
             {
-                console.log(data);
-                $('$#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
-                alert(data.responseText);
+
+                $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.responseText +"</div>");
+                
+              //  alert(data.responseText);
             }
 
         });

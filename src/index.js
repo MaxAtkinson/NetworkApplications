@@ -54,9 +54,9 @@ app.get('/channels', (req, res) => {
 app.post('/channels', (req, res) => {
     // TODO: DB logic to add channel
     /* 
-        db.channels.insert(req.body.channel, (err, result) => {
+        db.channels.insert(req.body.channelname, (err, result) => {
             if (!err) {
-                db.channels.find({channel.name: channelname},(err, results) => {
+                db.channels.find({req.body.channelname: channelname},(err, results) => {
                     if (!err){
                         res.json(err);
                     }
@@ -94,6 +94,7 @@ app.get('/channels/:id/messages', (req, res) => {
             }
         });
     */
+   
    res.send('not implemented');
 });
 
