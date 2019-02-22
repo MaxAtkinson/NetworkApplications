@@ -2,6 +2,7 @@ import { MongoClient } from 'mongodb';
 import fs from 'fs';
 import path from 'path';
 import db from '../db';
+import bcrypt from 'bcrypt';
 
 export default function configureAuth(app, jwt, dbUrl) {
     const saltRounds = 12;
