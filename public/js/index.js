@@ -137,7 +137,7 @@ class OutboundEventHandlers {
         
         $.ajax({
             type:       "POST",
-            url:        "",
+            url:        "channels",
             dataType:   "json",
             data:       $("#channelForm").serialize(),
             success: function(data)

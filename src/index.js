@@ -56,7 +56,22 @@ app.post('/channels', (req, res) => {
     /* 
         db.channels.insert(req.body.channel, (err, result) => {
             if (!err) {
-                res.json(result);
+                db.channels.find({channel.name: channelname},(err, results) => {
+                    if (!err){
+                        res.json(err);
+                    }
+                    else{
+                        res.status(404);
+                        res.json(err);
+                    }
+                })
+                if(results.length > 0){
+                    res.json('Duplicate Channel');
+                }
+                else{
+                    res.json(result);
+                }
+                
             } else {
                 res.status(400);
                 res.json(err);
