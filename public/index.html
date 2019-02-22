@@ -80,9 +80,61 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <a href="auth/register"><button type="button" class="btn btn-default">Register</button></a>
+                            <button type="button" class="btn btn-default" onClick="DomUtils.showRegisterForm()">Register</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
                             <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.loginFormSubmit()">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Register User Form Modal-->
+            <div class="modal fade" id="register-modal" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Register for Chatapp</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <form id="registerForm" name="registerForm">
+                                    <div class = "form-group">
+                                        <label for="email">Email:</label>
+                                        <input type="email" class="form-control" name="email" id="registerEmail" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
+                                    </div>
+                                    <div class = "form-group">
+                                            <label for="username">Username:</label>
+                                            <input type="text" class="form-control" name="username" id="registerUsername" aria-describedby="usernameHelp" placeholder="Your Unique Username"></input>
+                                        </div>
+                                    <div class = "form-group">
+                                        <label for="password">Password:</label>
+                                        <input type="password" class="form-control" name="password" id="registerpassword" placeholder="Password"></input>
+                                    </div>
+                                    <div class = "form-group">
+                                        <label for="confirmPassword">Confirm Password:</label>
+                                        <input type="password" class="form-control" name="confirmPassword" id="registerconfirmPassword" placeholder="Confirm Password"></input>
+                                    </div>
+                                </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.registerFormSubmit()">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!--Register User Confirm Form Modal-->
+            <div class="modal fade" id="register-confirm-modal" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Success</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <p>Registration Successful</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
                         </div>
                     </div>
                 </div>

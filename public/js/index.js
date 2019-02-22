@@ -34,6 +34,13 @@ class DomUtils {
         $channel.addClass('active');
     }
 
+    //showRegisterForm hides the login modal and shows the register modal 
+    static showRegisterForm()
+    {
+        $("#login-modal").modal('hide');   
+        $("#register-modal").modal('show');   
+    }
+
 }
 
 class Http {
@@ -92,7 +99,7 @@ class OutboundEventHandlers {
         }
     }
 
-    // Functions for submitting the server
+    // Functions for submitting to the server user authentication ifno
     static loginFormSubmit()
     {
         // Submit the form with AJAX and then 
@@ -126,11 +133,51 @@ class OutboundEventHandlers {
             error: function(data)
             {
                 console.log(data);
-                $('$#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                $('#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
                 alert(data.responseText);
             }
 
         });
+    }
+
+    static registerFormSubmit()
+    {
+            // Submit the form with AJAX and then 
+            $.ajax({
+                type:       "POST",
+                url:        "auth/register",
+                dataType:   "json",
+                data:       $("#registerForm").serialize(),
+                success: function(data)
+                {
+                    // When the status is 200, we have a valid username and password
+                    if (data.status == 200)
+                    {
+                        // Reset the contents of the form incase this is used later
+    
+    
+                        // Hide the login modal as we have a valid username and password response
+                        $("#register-modal").modal('hide');   
+                        $("#success-register-modal").modal('show');
+                        
+                    }
+                    // We have an invalid response to the username and password and display an error message to user
+                    else
+                    {  
+                        console.log(data);
+                        $('#registerForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                        //Reset the password field
+                        $('#registerPassword').val(''); 
+                    }
+                },
+                error: function(data)
+                {
+                    console.log(data);
+                    $('#registerForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                    alert(data.responseText);
+                }
+    
+            });
     }
 
     static addchannel(){
@@ -155,15 +202,16 @@ class OutboundEventHandlers {
                 // We have an invalid response to the username and password and display an error message to user
                 else
                 {  
-                    console.log(data);
+             //       console.log(data);
                     $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
                 }
             },
             error: function(data)
             {
-                console.log(data);
-                $('$#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
-                alert(data.responseText);
+
+                $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.responseText +"</div>");
+                
+              //  alert(data.responseText);
             }
 
         });
