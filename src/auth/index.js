@@ -101,7 +101,7 @@ export default function configureAuth(app, jwt, dbUrl) {
         });
 
     app.get('/auth/register', (req, res) => {
-        // Request if we have a get
+        
     });
 
 
@@ -219,7 +219,52 @@ export default function configureAuth(app, jwt, dbUrl) {
                     });
                 });
             });
-        });
+    });
+
+    
+    // Get used to check whether the user is authenticated and provide user object 
+    // information to the client side.
+    // This is to be used for disabling elements of the chat client on load of the page
+    app.get('/auth/verifyJWT',function (req,res) {
+        // Check whether the provided cookie has a ChatApp Token.
+        // If not return a user undefined object
+        if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
+            if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
+                var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
+
+                // Check whether the user is within the database
+                var dbo = db();
+                var query = {};
+                query['username'] = decodedUser.username;
+
+                dbo.collection('users').find(query).toArray(function (error, result) {
+                    if (error) {
+                        res.json({ success: 'Error Querying Database', status: 500 });
+                        return;
+                    }
+
+                    if (result.length != 1) {
+                        res.json({  success: 'User does not exist', status: 401 });
+                        return;
+                    }
+                });
+            
+                // We need to strip information from the user object we are about to send.
+                // I.e. we only give the username and email address. No passwords or
+                // sensitive info such as date of births.
+                var userToSend = { username: decodedUser.username , email: decodedUser.email};
+
+                // Then send the cleaned up decoded user to the client as a JSON object
+                res.json({user: userToSend, success: 'User has a valid JWT', status: 200});
+                return;
+            }
+        }
+        // The user hasn't successfully logged in before and therefore send an empty user object.
+        else
+        {
+            res.json({success: 'User does not have a valid JWT', status: 200});
+        }
+    });
 }
 
 

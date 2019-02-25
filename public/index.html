@@ -24,7 +24,8 @@
                             <a class="nav-link" href="#">Settings</a>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link btn" data-toggle="modal" data-target="#login-modal" id="loginStatus">Login</button>
+                            <button id="login-btn" class="nav-link btn" data-toggle="modal" data-target="#login-modal" id="loginStatus">Login</button>
+                            <button id="logout-btn" class="nav-link btn" onclick="OutboundEventHandlers.logout()" hidden="hidden">Logout</button>
                             <!--<a class="nav-link" href="/auth/login">Login</a>-->
                         </li>
                     </ul>
@@ -53,10 +54,28 @@
                         <div class="input-group mb-3">
                             <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="input">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit">Send</button>
+                                <button id="send-btn" class="btn btn-outline-secondary" type="submit">Send</button>
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <!--Unauthenticated Modal-->
+            <!-- Need to set the data-backgroup and data-keyboard attributes to stop users from dismissing the modal-->
+            <div class="modal fade" id="unauth-modal" role="dialog" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Welcome to Chatapp</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <p>Random Words</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" onClick="DomUtils.showLoginForm()">Login</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

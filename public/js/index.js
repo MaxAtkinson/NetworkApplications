@@ -41,11 +41,101 @@ class DomUtils {
         $("#register-modal").modal('show');   
     }
 
+    static showLoginForm()
+    {
+        $("#unauth-modal").modal('hide');   
+        $("#login-modal").modal('show');   
+    }
+
+    //enableUserAuthElements function enables the channel select buttons, message sending buttons etc.
+    // I.e. the change when a user becomes authenticated within the system.
+    static enableUserAuthElements(user)
+    {
+        // Input is the message editing box.
+        $("#input").prop('disabled', false);
+
+        // Disable the send message button
+        $("#send-btn").prop('disabled', false);
+
+        // Disable the add channel button
+        $("#channel-button").prop('hidden', false);
+
+        // Add logged in a user element
+
+        // Change the login button to a logout button
+        $("#logout-btn").prop('hidden', false);
+        $("#login-btn").prop('hidden', true);
+    }
+
+    //disableUserAuthElements 
+    static disableUserAuthElements()
+    {
+        // Show a modal which can not be removed
+        $("#unauth-modal").modal('show');   
+
+        // Input is the message editing box.
+        $("#input").prop('disabled', true);
+
+        // Disable the send message button
+        $("#send-btn").prop('disabled', true);
+
+        // hide the add channel button
+        $("#channel-button").prop('hidden', true);
+
+        // Change the Logout Button to login button
+        $("#logout-btn").prop('hidden', true);
+        $("#login-btn").prop('hidden', false);
+    }
+
 }
 
 class Http {
     static loadChannels(onLoad) {
         $.get('/channels', onLoad);
+    }
+
+    // Calling a AJAX get to check for the 
+    static checkLoggedIn(onLoad) {
+        // Submit the form with AJAX and then 
+        $.ajax({
+            type:       "GET",
+            url:        "auth/verifyJWT",
+            success: function(data)
+            {
+                // When the status is 200, we have a valid response. I.e.
+                // No server errors. 
+                if (data.status == 200)
+                {
+                    // We still need to check that the user variable is not undefined. I.e.
+                    if (!('user' in data))
+                    {
+                        DomUtils.disableUserAuthElements();
+                        console.log("User unauthenticated");
+                    }
+                    // The user has a valid JWT token and therefore is authenticated.
+                    // User logged in
+                    else
+                    {  
+                        console.log(data);
+                        console.log("User authenticated");
+                        DomUtils.enableUserAuthElements(data.user);
+                    }
+                }
+                else
+                {
+                    console.log("User unauthenticated");
+                    DomUtils.disableUserAuthElements();
+                }
+            },
+            error: function(data)
+            {
+                // We disable DOM elements for sending messages
+                DomUtils.disableUserAuthElements();
+                console.log("AJAX Response Invalid");
+
+            }
+
+        });
     }
 
     static loadMessagesForChannel(channelId, onLoad) {
@@ -97,6 +187,35 @@ class OutboundEventHandlers {
             socket.emit('message', message);
             $input.val('');
         }
+    }
+
+    static logout()
+    {
+        $.ajax({
+            type: "POST",
+            url:  "auth/logout",
+            success: function(data)
+            {
+                // When the POST is successful. I.e. code 200. Then we've been successfully logged out.
+                // As the server needs to note that the JWT is not valid no more, eventhough it stil has
+                // time to live. I..e Blacklist
+                if (data.status == 200)
+                {
+                    disableUserAuthElements();
+                }
+                // The user was never authenticated or had a valid JWT. Therefore we assume that they are logged out.
+                else
+                {
+                    console.log("Error: " + data.success);
+                    disableUserAuthElements();
+                }
+            },
+            error : function(data)
+            {
+                console.log("AJAX request error");
+            }
+        
+        });
     }
 
     // Functions for submitting to the server user authentication ifno
@@ -240,6 +359,7 @@ $(function main() {
     $input = $('#input');
     $input.focus();
     Http.loadChannels(DomUtils.addChannelsToPanel);
+    Http.checkLoggedIn();
     socket.on('connect', InboundEventHandlers.handleConnected);
     socket.on('message', InboundEventHandlers.handleMessageReceived);
     socket.on(`${room}Joined`, console.log);
