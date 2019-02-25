@@ -3,9 +3,14 @@ import fs from 'fs';
 import path from 'path';
 import db from '../db';
 import bcrypt from 'bcrypt';
+import sanitize from 'sanitize';
+import { EDESTADDRREQ } from 'constants';
 
 export default function configureAuth(app, jwt, dbUrl) {
     const saltRounds = 12;
+
+    // Set the application to use the sanitizing modules provived by sanitze module
+    app.use(sanitize.middleware);
 
     app.get('/auth/login', (req, res) => {
         console.log(req.cookies);
@@ -51,24 +56,23 @@ export default function configureAuth(app, jwt, dbUrl) {
         var password = req.body.password;
 
         /*Need to sanitise the inputs */
+        var dbo = db();
 
-        //Connect to the database
-        MongoClient.connect(dbUrl, function (error, db) {
-            var dbo = db.db('chatapp');
+        var query = {}
+        query['email'] = email;
+        dbo.collection('users').find(query).toArray(function (error, result) {
+            if (error) 
+            {
+                console.log('Database query error');
+                return;
+            }
 
-            var query = {}
-            query['email'] = email;
-            dbo.collection('users').find(query).toArray(function (error, result) {
-                if (error) {
-                    console.log('Database query error');
-                    return;
+            if (result.length != 1) {
+                console.log('User not database')
+                res.json({ success: 'Incorrect Username/Password', status: 401 });
+                return;
                 }
-
-                if (result.length != 1) {
-                    console.log('User not database')
-                    res.json({ success: 'Incorrect Username/Password', status: 401 });
-                    return;
-                }
+                
                 console.log('login for user: ' + result[0].username);
                 bcrypt.compare(password, result[0].password, function (error, result) {
                     if (error) {
@@ -85,7 +89,6 @@ export default function configureAuth(app, jwt, dbUrl) {
 
                         console.log(' was successful');
                         res.json({ success: 'Login Successful', status: 200 });
-                        //res.redirect('/');
                     }
                     else {
                         res.json({ success: 'Incorrect Username/Password', status: 401 });
@@ -95,68 +98,88 @@ export default function configureAuth(app, jwt, dbUrl) {
                 }.bind({ user: result[0] })); // Need to pass the user object in to allow for the 
             });
 
-
-
         });
 
-    });
-
     app.get('/auth/register', (req, res) => {
-        res.sendFile(path.join(__dirname, '../../public/auth/register.xhtml'));
+        // Request if we have a get
     });
 
 
     app.post('/auth/register', function (req, res) {
-        // If we don't have all the fields then we don't have a valid post
-        // Disp[]
-        if ((!req.body.username) || (!req.body.email)) {
-            //res.status('400');
-            //res.sendFile(path.join(__dirname, '../public/404.xhtml'));
+        
+        
+        
+        // If we don't have all the fields then we don't have a valid post and send a request error to the 
+        // client
+        if ((!req.body.username) || (!req.body.email) || (!req.body.password) || (!req.body.confirmPassword)) {
+            req.json({success: "Incorrect Request", status: 400});
+            return;
         }
 
         // First sanitise the fields and perform error correction
-        var username = req.body.username;
-        var email = req.body.email;
-        var password = req.body.password;
-        var confirmPassword = req.body.confirmPassword;
+        // Uses the node-sanitize module to strip the data
+        var username        = req.bodyString('username');
+        var email           = req.bodyEmail('email');
+        var password        = req.bodyString('password');
+        var confirmPassword = req.bodyString('confirmPassword');
 
-        /*
-        req.checkBody('username', 'Username is Required').notEmpty();
-        req.checkBody('email', 'Email Address is Required').notEmpty();
-        req.checkBody('password', 'Password is Required').notEmpty();
-       
-        var errors = req.validationErrors();
-        if (errors)
+        console.log("Sanitize is tickty boo");
+        console.log("Username in post was " + req.body.username);
+        console.log("Username sanitized" + username);
+
+        // Now check if each field is empty or valid.
+        // The username is required to be at least 3 characters long
+        if (username.length < 3)
         {
-            req.session.success = false;
+            // Status 202 is used to notify the client side
+            req.json({success: "Username Length is too short. Usernames are required to be 3 characters long" , status:202 });
             return;
         }
-        */
+        
+        console.log("Username length is tickty boo.")
+
+        // The email is required to be an email format
+        // Can't be clever with the regular expressions for checking whether the correct format since we now have .local type
+        // TLDs now
+        var emailRegex = new RegExp("/\S+@\S+/");
+
+        if ((emailRegex.test(email.toLowerCase())))
+        {
+            // Status 202 is used to notify the client side of the error 
+            res.json({success: "Email Address entered is not in an email address format." , status:202 });
+            return;
+        }
+
+        console.log("Email is tickty boo.")
+        
+        // Check that the password entered of a length of 5 characters
+        if (password.length < 5)
+        {
+            res.json({success: "Password length is too short. Passwords are required to be at least 5 characters", status: 202});
+        } 
+
+    
         //check that both passwords were valid
         if (password != confirmPassword) {
-            req.session.succsss = false;
-            console.log('Password Match Failed');
+            res.json({success: "Password and Confirm Password are not the same. Renter and then resubmit", status: 202});
         }
+
+        
+        console.log("Password is tickty boo.")
 
         var databaseObject;
 
         // Connect to the database
-        MongoClient.connect(dbUrl, function (error, db) {
-            if (error) {
-                console.log('Problem connecting to database');
-                throw error;
-            }
-
-            var dbo = db.db('chatapp');
-            var query = {};
-            query['username'] = username;
+        var dbo = db();
+        var query = {};
+        query['username'] = username;
 
             // Check that the username doesn't already exist
             dbo.collection('users').find(query).toArray(function (error, result) {
                 console.log('Users:');
                 console.log(result);
                 if (result[0]) {
-                    console.log('Username already exists\n\r');
+                    res.json({success: "This username is already used. Please select another.", status: 202});
                     return;
                 }
 
@@ -168,7 +191,7 @@ export default function configureAuth(app, jwt, dbUrl) {
                     console.log('Email:');
                     console.log(result);
                     if (result[0]) {
-                        console.log('Email Address already in use\n\r');
+                        res.json({success: "This email address is already in use. Reset your password", status: 202});
                         return;
                     }
 
@@ -183,25 +206,20 @@ export default function configureAuth(app, jwt, dbUrl) {
                         // Create the new user
                         dbo.collection('users').insertOne(newUser, function (error, result) {
                             if (error) {
-                                console.log('Problem adding user');
-                                console.log(error);
+                                res.json({success: "Problem adding new user to database", status: 500});
+                                return;
                             }
                             else {
                                 console.log('New User: ' + newUser.username + ' added.');
-                                res.redirect('/auth/login');
+                                res.json({success: "New User" + newUser.username + "as added successfully", status: 200});
+                                return;
                             }
 
                         });
-
-                        db.close();
-
                     });
                 });
             });
         });
-    });
-
-
 }
 
 

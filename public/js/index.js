@@ -102,6 +102,13 @@ class OutboundEventHandlers {
     // Functions for submitting to the server user authentication ifno
     static loginFormSubmit()
     {
+        // Remove any previous error message bootstrap alerts
+        // from the DOM
+        if (document.getElementById('loginError'))
+        {
+            $('#loginError').remove();
+        }
+
         // Submit the form with AJAX and then 
         $.ajax({
             type:       "POST",
@@ -113,7 +120,7 @@ class OutboundEventHandlers {
                 // When the status is 200, we have a valid username and password
                 if (data.status == 200)
                 {
-                    // Reset the contents of the form incase this is used later
+                    // Reset the contents of the form since it may be used later
 
 
                     // Hide the login modal as we have a valid username and password response
@@ -125,7 +132,7 @@ class OutboundEventHandlers {
                 else
                 {  
                     console.log(data);
-                    $('#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                    $('#loginForm').append("<div class='alert alert-danger' id='loginError'><strong>Error: </strong>" + data.success +"</div>");
                     //Reset the password field
                     $('#password').val(''); 
                 }
@@ -133,7 +140,7 @@ class OutboundEventHandlers {
             error: function(data)
             {
                 console.log(data);
-                $('#loginForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                $('#loginForm').append("<div class='alert alert-danger' id='loginError'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
                 alert(data.responseText);
             }
 
@@ -142,6 +149,13 @@ class OutboundEventHandlers {
 
     static registerFormSubmit()
     {
+            // Remove any previous error message bootstrap alerts
+            // from the DOM
+            if (document.getElementById('registerError'))
+            {
+                $('#registerError').remove();
+            }
+
             // Submit the form with AJAX and then 
             $.ajax({
                 type:       "POST",
@@ -165,15 +179,16 @@ class OutboundEventHandlers {
                     else
                     {  
                         console.log(data);
-                        $('#registerForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                        $('#registerForm').append("<div class='alert alert-danger'  id='registerError'><strong>Error: </strong>" + data.success +"</div>");
                         //Reset the password field
                         $('#registerPassword').val(''); 
+                        $('#registerConfir')
                     }
                 },
                 error: function(data)
                 {
                     console.log(data);
-                    $('#registerForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                    $('#registerForm').append("<div class='alert alert-danger' id='registerError'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
                     alert(data.responseText);
                 }
     
