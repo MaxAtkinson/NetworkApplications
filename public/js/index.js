@@ -96,7 +96,6 @@ class Http {
 
     // Calling a AJAX get to check for the 
     static checkLoggedIn(onLoad) {
-
         // Submit the form with AJAX and then 
         $.ajax({
             type:       "GET",
@@ -167,9 +166,18 @@ class InboundEventHandlers {
     }
 
     static handleMessageReceived(msg) {
+        
+        console.log(msg);
+        $chat.append('<p>' + msg + '</p>');
+        DomUtils.scrollToBottom();
+
+        /*
         const $para = $('</p>').text(msg);
         $chat.append($para);
-        DomUtils.scrollToBottom();
+
+
+
+                */
     }
 }
 
@@ -177,7 +185,7 @@ class OutboundEventHandlers {
     static handleChangeChannel(channelId) {
         socket.emit('channelChange', channelId);
         DomUtils.setActiveChannel(channelId);
-        // Http.loadMessagesForChannel(DomUtils.addMessagesToChat);
+        //Http.loadMessagesForChannel(DomUtils.addMessagesToChat);
     }
 
     static handleSendMessage(e) {
@@ -192,8 +200,6 @@ class OutboundEventHandlers {
 
     static logout()
     {
-        alert("Do you want to logout");
-
         $.ajax({
             type: "POST",
             url:  "auth/logout",
@@ -325,6 +331,25 @@ class OutboundEventHandlers {
             });
     }
 
+    // Update user details allows the user to change their username and password within the system
+    static updateUserFormSubmit()
+    {
+        $.ajax({
+            type:       "POST",
+            url:        "auth/updateuser",
+            dataType:   "json",
+            data:       $("#updateUserForm").serialize(),
+            success: function(data)
+            {
+
+            },
+            error: function(data)
+            {
+
+            }
+        });
+    }
+
     static addchannel(){
         
         $.ajax({
@@ -341,7 +366,6 @@ class OutboundEventHandlers {
 
                     // Hide the login modal as we have a valid username and password response
                     $("#channel-modal").modal('hide');   
-                  //  document.getElementById('channelStatus').innerHTML = "My Profile";
                     
                 }
                 // We have an invalid response to the username and password and display an error message to user
@@ -364,6 +388,9 @@ class OutboundEventHandlers {
     }
 }
 
+ function testAlert(){
+    alert("test");
+}
 
 $(function main() {
     $chat = $('#chat');

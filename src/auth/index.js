@@ -332,7 +332,18 @@ export default function configureAuth(app, jwt, dbUrl) {
             res.json({success: 'User does not have a valid JWT', status: 200});
         }
     });
+
+    // Updateuser form submission. Used for updating a user's details within the system
+    app.post('/auth/updateuser', function(req, res)
+    {
+
+
+
+    });
+
 }
+
+
 
 
 // initialiseJWT imports the private and public key into the node.js script

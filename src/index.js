@@ -30,8 +30,14 @@ configureSockets(io);
 configureAuth(app, jwt, dbUrl);
 
 // Serve the socket.io client from node_modules
+/*app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.xhtml'));
+});
+*/
+
+// Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
-    res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.min.js'));
+    res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.js'));
 });
 
 app.get('/channels', (req, res) => {
