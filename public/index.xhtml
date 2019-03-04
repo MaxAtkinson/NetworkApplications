@@ -1,17 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
     <head>
         <title>CoolChat</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
         <link rel="stylesheet" type="text/css" href="./css/styles.css"/>
         <script  type="text/javascript" src="/socket.io-client.js"></script>
-        <script type= "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js">
-        </script>
-        <!--                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="  crossorigin="anonymous"-->
+        <script type= "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <!-- integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"  crossorigin="anonymous"-->
         <script type="text/javascript" src="./js/index.js"></script>
     </head>
     <body>
@@ -19,7 +15,7 @@
             <div class="container">
                 <a class="navbar-brand" href="#">
                     <img src="/assets/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="" />
-                    &nbsp;CoolChat
+                    CoolChat
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav ml-auto">
@@ -35,7 +31,7 @@
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="row">
+            <div id="container-row" class="row">
 
                 <div id="channel-panel" class="col-md-2">
                     <h1>Channels</h1>
@@ -93,7 +89,7 @@
                             <form id="loginForm" name="loginForm">
                                 <div class = "form-group">
                                     <label for="email"> Email:</label>
-                                    <input type="email" class="form-control" id="email"  name="email" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
+                                    <input type="email" class="form-control" id="email"  name="email"  placeholder="username@domain.com"></input>
                                 </div>
                                 <div class = "form-group">
                                         <label for="password"> Password:</label>
@@ -121,18 +117,18 @@
                             <form id="registerForm" name="registerForm">
                                     <div class = "form-group">
                                         <label for="email">Email:</label>
-                                        <input type="email" class="form-control" name="email" id="registerEmail" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
+                                        <input type="email" class="form-control" name="email" id="registerEmail" placeholder="username@domain.com"></input>
                                     </div>
                                     <div class = "form-group">
-                                            <label for="username">Username:</label>
-                                            <input type="text" class="form-control" name="username" id="registerUsername" aria-describedby="usernameHelp" placeholder="Your Unique Username"></input>
+                                            <label for="registerUsername">Username:</label>
+                                            <input type="text" class="form-control" name="username" id="registerUsername" placeholder="Your Unique Username"></input>
                                         </div>
                                     <div class = "form-group">
-                                        <label for="password">Password:</label>
-                                        <input type="password" class="form-control" name="password" id="registerpassword" placeholder="Password"></input>
+                                        <label for="registerPassword">Password:</label>
+                                        <input type="password" class="form-control" name="password" id="registerPassword" placeholder="Password"></input>
                                     </div>
                                     <div class = "form-group">
-                                        <label for="confirmPassword">Confirm Password:</label>
+                                        <label for="registerconfirmPassword">Confirm Password:</label>
                                         <input type="password" class="form-control" name="confirmPassword" id="registerconfirmPassword" placeholder="Confirm Password"></input>
                                     </div>
                                 </form>
@@ -172,8 +168,8 @@
                         <div class="modal-body>">
                             <form id="channelForm" name="channelForm">
                                 <div class = "form-group">
-                                    <label for="channel name"> Channel Name:</label>
-                                    <input type="text" class="form-control" id="channelname"  name="channelname" aria-describedby="channelHelp" placeholder="Boaty McBoatface"></input>
+                                    <label for="channelname"> Channel Name:</label>
+                                    <input type="text" class="form-control" id="channelname"  name="channelname" placeholder="Boaty McBoatface"></input>
                                 </div>
 
                             </form>
