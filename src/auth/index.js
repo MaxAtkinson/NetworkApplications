@@ -4,10 +4,35 @@ import path from 'path';
 import db from '../db';
 import bcrypt from 'bcrypt';
 import sanitize from 'sanitize';
-import { EDESTADDRREQ } from 'constants';
+import redis    from 'redis';
+import { EDESTADDRREQ, ESRCH } from 'constants';
+
+
+let _client;
+
+export function redisClient() {
+    return _client;
+}
+
+
+
+
 
 export default function configureAuth(app, jwt, dbUrl) {
     const saltRounds = 12;
+
+    // Create the redis client
+    _client = redis.createClient();
+
+    // Redis Connection Callback
+    _client.on('connect', function() {
+        console.log('Connection to Redis server successful');
+    });
+
+    // Redis Connection Callback
+    _client.on('error', function() {
+        console.log('Connection to Redis server unsuccessful');
+    });
 
     // Set the application to use the sanitizing modules provived by sanitze module
     app.use(sanitize.middleware);
@@ -89,6 +114,18 @@ export default function configureAuth(app, jwt, dbUrl) {
 
                         console.log(' was successful');
                         res.json({ success: 'Login Successful', status: 200 });
+
+                        // Need to store the status of the JWT in a redis database for fast retrival
+                        redisClient().set(this.user.username,'valid',function(err,value){
+                            if (err)
+                            {
+                                console.log("Redis Error. Unable to store JWT status");
+                            }
+                            else
+                            {
+
+                            }
+                        });
                     }
                     else {
                         res.json({ success: 'Incorrect Username/Password', status: 401 });
@@ -99,6 +136,40 @@ export default function configureAuth(app, jwt, dbUrl) {
             });
 
         });
+
+    app.post('/auth/logout', function(req,res)
+    {  
+        // Check the user's JWT to get user infomation
+        if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
+            if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
+                var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
+
+                // We assume that since the verifyJWT passed then the decodedUser's token originated from this server and
+                // and therefore we do not need to check whether the user exists in the database.
+
+    
+                redisClient().get(decodedUser.username, function(err,value) {
+                    if (err){
+                        res.json({success: "User unable to be logged out", status: "500"});
+                        return;
+                    }
+                    else {
+                        redisClient().set(this.username,"invalid", function(err,value){
+                            if (err){
+                                res.json({success: "User unable to be logged out", status: "500"});
+                                return;
+                            }
+                            else{
+                                res.json({success: "User logged out", status: 200});
+                                return;
+                            }
+                        });
+                    }
+                }.bind({ username: decodedUser.username}));
+            }
+        }
+    });   
+
 
     app.get('/auth/register', (req, res) => {
         
@@ -232,31 +303,27 @@ export default function configureAuth(app, jwt, dbUrl) {
             if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
                 var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
 
-                // Check whether the user is within the database
-                var dbo = db();
-                var query = {};
-                query['username'] = decodedUser.username;
-
-                dbo.collection('users').find(query).toArray(function (error, result) {
-                    if (error) {
-                        res.json({ success: 'Error Querying Database', status: 500 });
+                // Check the status if the JWT with redis. Has it been invalidated for the user
+                redisClient().get(decodedUser.username, function(err,value) {
+                    if (err){
+                        res.json({success: "Redis error: User unable to be verified", status: "500"});
                         return;
                     }
+                    else if (value == 'valid') {
+                        // We need to strip information from the user object we are about to send.
+                        // I.e. we only give the username and email address. No passwords or
+                        // sensitive info such as date of births.
 
-                    if (result.length != 1) {
-                        res.json({  success: 'User does not exist', status: 401 });
+                        var userToSend = { username: decodedUser.username , email: decodedUser.email};
+                        res.json({user: userToSend, success: 'User has a valid JWT', status: 200});
+                        return;
+                    }
+                    else
+                    {
+                        res.json({success: "User does not have a valid JWT", status: 200});
                         return;
                     }
                 });
-            
-                // We need to strip information from the user object we are about to send.
-                // I.e. we only give the username and email address. No passwords or
-                // sensitive info such as date of births.
-                var userToSend = { username: decodedUser.username , email: decodedUser.email};
-
-                // Then send the cleaned up decoded user to the client as a JSON object
-                res.json({user: userToSend, success: 'User has a valid JWT', status: 200});
-                return;
             }
         }
         // The user hasn't successfully logged in before and therefore send an empty user object.
@@ -314,42 +381,3 @@ function decodeJWT(jwt, token) {
     return jwt.decode(token, { complete: true });
 }
 
-
-/*    //Session Authentication
-function createSession(user)
-{
-    const uuidv4 = require('uuid/v4');
-
-    var session_secret = uuidv4;
-    var sessionData = {};
-    sessionData['cookieName']       = 'chatapp_session',
-    sessionData['session_secret']   = session_secret,
-    sessionData['duration']         = 60 * 10 * 1000 //10 minutes active session
-    sessionData['activeDuration']   = 60 * 60 * 1000 // 1 hour active session
-
-    //
-    user.session        = session_secret;
-    user.lastlogintime  = new Date();
-
-    var dbo = db.db('chatapp');
-
-    var query = {}
-    query['email'] = user.email;
-    var newValues;
-    newValues['session_uuid'] = session_secret;
-    newValues['lastlogintime'] = new Date();
-    dbo.collection('users').updateOne(query,newValues,function(error,result)
-    {
-        if (error)
-        {
-            console.log('Database query error');
-            throw error;
-            return;
-        }
-        else if (result.n != 1)
-        {
-            console.log('Not updated properly\n\r');
-        }
-    });
-}
-*/

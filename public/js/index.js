@@ -96,6 +96,7 @@ class Http {
 
     // Calling a AJAX get to check for the 
     static checkLoggedIn(onLoad) {
+
         // Submit the form with AJAX and then 
         $.ajax({
             type:       "GET",
@@ -191,6 +192,8 @@ class OutboundEventHandlers {
 
     static logout()
     {
+        alert("Do you want to logout");
+
         $.ajax({
             type: "POST",
             url:  "auth/logout",
@@ -201,13 +204,22 @@ class OutboundEventHandlers {
                 // time to live. I..e Blacklist
                 if (data.status == 200)
                 {
-                    disableUserAuthElements();
+                    console.log("Logout succcessful");
+                    DomUtils.disableUserAuthElements();
+                    
+                    // Delete the ChatApp JWT Token as this is what is identifiyign users. This is stored as a cookie
+                    // The server should have blacklisted it anyway
+                    document.cookie = "ChatAppToken= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                 }
                 // The user was never authenticated or had a valid JWT. Therefore we assume that they are logged out.
                 else
                 {
                     console.log("Error: " + data.success);
-                    disableUserAuthElements();
+                    DomUtils.disableUserAuthElements();
+                    
+                    // Delete the ChatApp JWT Token as this is what is identifiyign users. This is stored as a cookie
+                    // The server should have blacklisted it anyway
+                    document.cookie = "ChatAppToken" + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
                 }
             },
             error : function(data)
@@ -243,9 +255,8 @@ class OutboundEventHandlers {
 
 
                     // Hide the login modal as we have a valid username and password response
-                    $("#login-modal").modal('hide');   
-                    document.getElementById('loginStatus').innerHTML = "My Profile";
-                    
+                    $("#login-modal").modal('hide'); 
+                    DomUtils.enableUserAuthElements();
                 }
                 // We have an invalid response to the username and password and display an error message to user
                 else
