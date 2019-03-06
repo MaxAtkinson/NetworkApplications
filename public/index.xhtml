@@ -1,22 +1,21 @@
-<html lang="en">
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
     <head>
         <title>CoolChat</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="./css/styles.css">
-        <script src="/socket.io-client.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-                crossorigin="anonymous">
-        </script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-        <script src="./js/index.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
+        <link rel="stylesheet" type="text/css" href="./css/styles.css"/>
+        <script  type="text/javascript" src="/socket.io-client.js"></script>
+        <script type= "text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="./js/index.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <a class="navbar-brand" href="#">
                     <img src="/assets/img/logo.png" width="30" height="30" class="d-inline-block align-top" alt="" />
-                    &nbsp;CoolChat
+                    CoolChat
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav ml-auto">
@@ -24,15 +23,15 @@
                             <a class="nav-link" href="#">Settings</a>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link btn" data-toggle="modal" data-target="#login-modal" id="loginStatus">Login</button>
-                            <!--<a class="nav-link" href="/auth/login">Login</a>-->
+                            <button id="login-btn" class="nav-link btn" data-toggle="modal" data-target="#login-modal">Login</button>
+                            <button id="logout-btn" class="nav-link btn" onclick="OutboundEventHandlers.logout()" hidden="hidden">Logout</button>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="container-fluid">
-            <div class="row">
+            <div id="container-row" class="row">
 
                 <div id="channel-panel" class="col-md-2">
                     <h1>Channels</h1>
@@ -44,19 +43,38 @@
 
                 <div id="info-panel" class="col-md-2">
                     <p class="text-center">
-                        <button id="channel-button" data-toggle="modal" data-target="#channel-modal" id="channelStatus">Add Channel</button>
+                        <button id="channel-button" data-toggle="modal" data-target="#channel-modal">Add Channel</button>
                     </p>
                 </div>
 
                 <div id="user-input" class="col-md-10">
-                    <form onSubmit="OutboundEventHandlers.handleSendMessage(event)">
+                    <form onsubmit="OutboundEventHandlers.handleSendMessage(event)">
                         <div class="input-group mb-3">
-                            <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="input">
+                            <input id="input" type="text" class="form-control" placeholder="Message" aria-label="Message" aria-describedby="input"></input>
                             <div class="input-group-append">
-                                <button id= "send" class="btn btn-outline-secondary" type="submit">Send</button>
+                                <button id="send-btn" class="btn btn-outline-secondary" type="submit">Send</button>
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <!--Unauthenticated Modal-->
+            <!-- Need to set the data-backgroup and data-keyboard attributes to stop users from dismissing the modal-->
+            <div class="modal fade" id="unauth-modal" role="dialog" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Welcome to Chatapp</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <p>Random Words</p>
+                        </div>
+                        <div class="modal-footer">
+                                <button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button>
+                            <!--<button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button> -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -71,7 +89,7 @@
                             <form id="loginForm" name="loginForm">
                                 <div class = "form-group">
                                     <label for="email"> Email:</label>
-                                    <input type="email" class="form-control" id="email"  name="email" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
+                                    <input type="email" class="form-control" id="email"  name="email"  placeholder="username@domain.com"></input>
                                 </div>
                                 <div class = "form-group">
                                         <label for="password"> Password:</label>
@@ -80,8 +98,8 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" onClick="DomUtils.showRegisterForm()">Register</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
+                            <button type="button" class="btn btn-default" onclick="DomUtils.showRegisterForm()">Register</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                             <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.loginFormSubmit()">Login</button>
                         </div>
                     </div>
@@ -99,18 +117,18 @@
                             <form id="registerForm" name="registerForm">
                                     <div class = "form-group">
                                         <label for="email">Email:</label>
-                                        <input type="email" class="form-control" name="email" id="registerEmail" aria-describedby="emailHelp" placeholder="username@domain.com"></input>
+                                        <input type="email" class="form-control" name="email" id="registerEmail" placeholder="username@domain.com"></input>
                                     </div>
                                     <div class = "form-group">
-                                            <label for="username">Username:</label>
-                                            <input type="text" class="form-control" name="username" id="registerUsername" aria-describedby="usernameHelp" placeholder="Your Unique Username"></input>
+                                            <label for="registerUsername">Username:</label>
+                                            <input type="text" class="form-control" name="username" id="registerUsername" placeholder="Your Unique Username"></input>
                                         </div>
                                     <div class = "form-group">
-                                        <label for="password">Password:</label>
-                                        <input type="password" class="form-control" name="password" id="registerpassword" placeholder="Password"></input>
+                                        <label for="registerPassword">Password:</label>
+                                        <input type="password" class="form-control" name="password" id="registerPassword" placeholder="Password"></input>
                                     </div>
                                     <div class = "form-group">
-                                        <label for="confirmPassword">Confirm Password:</label>
+                                        <label for="registerconfirmPassword">Confirm Password:</label>
                                         <input type="password" class="form-control" name="confirmPassword" id="registerconfirmPassword" placeholder="Confirm Password"></input>
                                     </div>
                                 </form>
@@ -150,14 +168,14 @@
                         <div class="modal-body>">
                             <form id="channelForm" name="channelForm">
                                 <div class = "form-group">
-                                    <label for="channel name"> Channel Name:</label>
-                                    <input type="text" class="form-control" id="channelname"  name="channelname" aria-describedby="channelHelp" placeholder="Boaty McBoatface"></input>
+                                    <label for="channelname"> Channel Name:</label>
+                                    <input type="text" class="form-control" id="channelname"  name="channelname" placeholder="Boaty McBoatface"></input>
                                 </div>
 
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button></a>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                             <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.addchannel()">Create</button>
                         </div>
                     </div>
