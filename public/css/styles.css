@@ -8,12 +8,11 @@
 #channel-panel {
     overflow-y: auto;
     word-wrap:break-word;
-    height: calc(90% - 56px);
+    height: calc(90%-56px);
     background-color: #5f27cd;
     color: white;
     border-right: 2px black solid;
 }
-
 
 #channel-panel h1 {
     /* font-size: 2.3vw; */
