@@ -183,7 +183,7 @@ export default function configureAuth(app, jwt, dbUrl) {
         // If we don't have all the fields then we don't have a valid post and send a request error to the 
         // client
         if ((!req.body.username) || (!req.body.email) || (!req.body.password) || (!req.body.confirmPassword)) {
-            req.json({success: "Incorrect Request", status: 400});
+            res.json({success: "Incorrect Request", status: 400});
             return;
         }
 
@@ -203,7 +203,7 @@ export default function configureAuth(app, jwt, dbUrl) {
         if (username.length < 3)
         {
             // Status 202 is used to notify the client side
-            req.json({success: "Username Length is too short. Usernames are required to be 3 characters long" , status:202 });
+            res.json({success: "Username Length is too short. Usernames are required to be 3 characters long" , status:202 });
             return;
         }
         
