@@ -30,80 +30,126 @@ configureSockets(io);
 configureAuth(app, jwt, dbUrl);
 
 // Serve the socket.io client from node_modules
-/*app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/index.xhtml'));
-});
-*/
-
-// Serve the socket.io client from node_modules
 app.get('/socket.io-client.js', (req, res) => {
-    res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.js'));
+    res.sendFile(path.join(__dirname, '../node_modules/socket.io-client/dist/socket.io.min.js'));
 });
 
 app.get('/channels', (req, res) => {
-    // TODO: DB logic to fetch channels
-    res.json([
-        {
-            _id: 1,
-            name: 'Channel 1' // Mock data
-        },
-        {
-            _id: 2,
-            name: 'Channel 2'
-        },
-        {
-            _id: 3,
-            name: 'Channel 3'
-        }
-    ]);
+
+
+    var dbo = db();
+
+    dbo.collection("channels").find({}).toArray(function (err, result) {
+        if (err) throw err;
+        console.log(result);
+        res.json(result);
+    });
 });
 
 app.post('/channels', (req, res) => {
-    // TODO: DB logic to add channel
-    /* 
-        db.channels.insert(req.body.channelname, (err, result) => {
-            if (!err) {
-                db.channels.find({req.body.channelname: channelname},(err, results) => {
-                    if (!err){
-                        res.json(err);
-                    }
-                    else{
-                        res.status(404);
-                        res.json(err);
-                    }
-                })
-                if(results.length > 0){
-                    res.json('Duplicate Channel');
-                }
-                else{
-                    res.json(result);
-                }
-                
-            } else {
-                res.status(400);
-                res.json(err);
-            }
-        });
-    */
-   res.send('not implemented');
+
+    var dbo = db();
+    var myobj = { name: req.body.channelname };
+    
+
+    dbo.collection("channels").find(myobj).toArray(function (err, result) {
+        if (err) {
+            throw err
+        }
+        else if (result.length == 0) {
+
+            dbo.collection("channels").insertOne(myobj, function (err, result) {
+                if (err) throw err;
+                console.log(req.body);
+            });
+
+            res.sendStatus(200)
+        }
+        else {
+            res.send("Duplicate Channel, please pick a unique name");
+        }
+    });
+    //code to emmit new channel   
 });
 
-app.get('/channels/:id/messages', (req, res) => {
-    // TODO: DB logic to get last 20 messages from channel with id :id
-    /* 
-        const channelId = req.params.id;
-        db.messages.find({ channel._id: channelId }, { limit: 20, sort: 'timestamp' }, (err, results) => {
-            if (!err) {
-                res.json(results);
-            } else {
-                res.status(404);
-                res.json(err);
-            }
-        });
-    */
+// app.get('/channels/:id/messages', (req, res) => {
+
+// //==========================
+//     // TODO: DB logic to get last 20 messages from channel with id :id
+//     var dbo = db();
+
+//     const channelId = req.body.channelId;
+//     var myobj = {id: channelId, message:{}};
+//     //{_id: cid, name: cnm, message:{username: usn, body: msg}};
+
+//     // dbo.collection("channels").find(myobj,{ limit: 20 }).toArray(function (err, result) {
+//     //     if (err) throw err;
+//     //     console.log(result);
+//     //     res.json(result);
+//     // });
+
+// //====================
+
+
+//     // dbo.collection("channels").find({}).toArray(function(err, result) {
+//     //     if (err) throw err;
+//     //     console.log(result);
+
+//     //   res.json(result);
+//     //   });
+
+//     // const channelId = req.params.id;
+//     // db.messages.find({ channel: channelId }, { limit: 20}, (err, results) => {
+//     //     if (!err) {
+//     //         res.json(results);
+//     //     } else {
+//     //         res.status(404);
+//     //         res.json(err);
+//     //     }
+//     // });
+
+//     res.json(myobj);
+//     //res.sendStatus(200);
+// });
+
+
+app.post('/channels/:id/messages', (req, res) =>{
+    
+//     var cid = req.body.channelId;
+//     var cnm = req.body.channelname;
+//     var usn = req.body.username;
+//     var msg = req.body.message;
+
+//     myobj ={_id: cid, name: cnm, message:{username: usn, body: msg}};
+
+
+//     /*
+//     var message = new Message(req.body)
+//     message.save(err =>{
+//         if(err)
+//             sendStatus(500)
+
+//             Message.findOne({message: 'badword'}, (err, censored) =>{
+//                 if(censored){
+//                     console.log('censored words found')
+//                     Message.deleteOne({_id: censored.id}, (err) =>{
+//                         console.log('removed censored message') 
+//                     })
+//                 }
+//             })
+
+//        // messages.push(req.body)
+//         io.emit('message', req.body)
+//         res.sendStatus(200)
+//     })
+// */
    
-   res.send('not implemented');
-});
+})
+
+
+
+
+// 
 
 // Listen on our port
 server.listen(app.get('port'), () => {
