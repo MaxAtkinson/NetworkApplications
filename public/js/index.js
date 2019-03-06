@@ -87,6 +87,12 @@ class DomUtils {
         $("#login-btn").prop('hidden', false);
     }
 
+    static updatecss(){
+
+        $("#chat").css("height",$(window).height()-128);
+        $('#channel-panel').css('height',$(window).height()-128)
+    }
+
 }
 
 class Http {
@@ -392,12 +398,15 @@ class OutboundEventHandlers {
     alert("test");
 }
 
+
 $(function main() {
     $chat = $('#chat');
     $input = $('#input');
     $input.focus();
+    DomUtils.updatecss();
     Http.loadChannels(DomUtils.addChannelsToPanel);
     Http.checkLoggedIn();
+    window.onresize = DomUtils.updatecss;
     socket.on('connect', InboundEventHandlers.handleConnected);
     socket.on('message', InboundEventHandlers.handleMessageReceived);
     socket.on(`${room}Joined`, console.log);
