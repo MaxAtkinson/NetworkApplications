@@ -41,8 +41,6 @@ app.get('/socket.io-client.js', (req, res) => {
 });
 
 app.get('/channels', (req, res) => {
-
-
     var dbo = db();
 
     dbo.collection("channels").find({}).toArray(function (err, result) {
@@ -50,6 +48,17 @@ app.get('/channels', (req, res) => {
         console.log(result);
         res.json(result);
     });
+});
+
+app.get('/othermessages',(req, res) => {
+    var dbo = db();
+    
+     dbo.collection("messages").find({_id : req.query}).toArray(function (err, result) {
+         if (err) throw err;
+         console.log(result);
+         res.json(result);
+     });
+
 });
 
 app.post('/channels', (req, res) => {
