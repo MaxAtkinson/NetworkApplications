@@ -1,3 +1,5 @@
+import db from '../db';
+
 export default function configureSockets(io) {
     // Set up socket.io handlers
     io.on('connection', function (socket) {
@@ -10,14 +12,15 @@ export default function configureSockets(io) {
     
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
-                console.log(getChannel(socket));
-                console.log(msg);
+                // console.log(getChannel(socket));
+                // console.log(msg);
+
             });
     
             socket.on('channelChange', (channel) => {
                 socket.leaveAll();
                 socket.join(channel, () => {
-                    console.log(getChannel(socket));
+                    // console.log(getChannel(socket));
                     socket.emit('channelChanged', channel);
                 });
             });
@@ -26,5 +29,6 @@ export default function configureSockets(io) {
 }
 
 function getChannel(socket) {
+
     return Object.keys(socket.rooms).find(r => r);
 }
