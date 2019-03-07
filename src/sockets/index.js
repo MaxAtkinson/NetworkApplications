@@ -43,7 +43,7 @@ function getChannel(socket) {
 //if the JWT is valid and. Otherwise returns null.
 function checkUserAuth(cookieString){
     // Verify this is a valid JWT and then decode the JWT to get the user
-    if(auth.verifyUserJWT(jwt, cookieString))
+    if(auth.verifyJWT(jwt, cookieString))
     {
         var user = auth.decodeJWT(jwt, cookieString).payload;
     

@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 // TODO: db module then:
 // import db from './db';
 import configureSockets from './sockets';
-import configureAuth from './auth'
+import auth from './auth'
 import db from './db';
 
 // Init web app
@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 configureSockets(io);
-configureAuth(app, jwt, dbUrl);
+auth.configureAuth(app, jwt, dbUrl);
 
 // Serve the socket.io client from node_modules
 /*app.get('/', (req, res) => {
