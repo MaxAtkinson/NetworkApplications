@@ -25,7 +25,12 @@ class DomUtils {
         }
     }
 
-    static addMessagesToChat(messages) {}
+    static addMessagesToChat(messages) {
+
+        console.log(messages);
+
+
+    }
 
     static setActiveChannel(channelId) {
         const $allChannels = $('.channel');
@@ -146,13 +151,10 @@ class Http {
 
     static loadMessagesForChannel(channelId, onLoad) {
         // Todo: Use $.ajax here and pass onLoad to its response handler
-      console.log(channelId);
-
-
 
       $.ajax({
         type:       "GET",
-        url:        "/othermessages",
+        url:        "/messages",
         dataType:   "json",
         data:       channelId,
         success: function(data)
@@ -176,24 +178,6 @@ class Http {
     });
 
 
-        // $.get('/messages',onLoad);
-        // onLoad([
-        //     {
-        //         _id: 1,
-        //         channelId: 1, // Mock data
-        //         text: 'Hi'
-        //     },
-        //     {
-        //         _id: 2,
-        //         channelId: 1,
-        //         text: 'Hello'
-        //     },
-        //     {
-        //         _id: 3,
-        //         channelId: 1,
-        //         text: 'How are you?'
-        //     }
-        // ]);
     }
 }
 
@@ -231,7 +215,6 @@ class OutboundEventHandlers {
 
         if (message.trim() !== '') {
             socket.emit('message', message);
-            $.post("/newmessage");
             $input.val('');
         }
     }

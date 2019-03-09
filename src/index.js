@@ -50,10 +50,9 @@ app.get('/channels', (req, res) => {
     });
 });
 
-app.get('/othermessages',(req, res) => {
+app.get('/messages',(req, res) => {
     var dbo = db();
-    
-     dbo.collection("messages").find({_id : req.query}).toArray(function (err, result) {
+     dbo.collection("messages").find({_id : require('url').parse(req.url).query}).toArray(function (err, result) {
          if (err) throw err;
          console.log(result);
          res.json(result);
