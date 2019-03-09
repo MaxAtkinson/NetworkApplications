@@ -21,8 +21,20 @@ export default function configureSockets(io) {
     
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
-                console.log(getChannel(socket));
-                console.log(msg);
+
+                console.log(this.userboi);
+                var date = new Date()
+
+                var timestamp = date.getTime()
+                var dbo = db();
+                var myobj ={channelID: getChannel(socket), message: msg, username: "aln2", timestamp: timestamp}
+
+                dbo.collection("messages").insertOne(myobj, function (err, result) {
+                    if (err) throw err;
+                    //console.log(req.body);
+                });
+                // console.log(getChannel(socket));
+                // console.log(msg);
             });
     
             socket.on('channelChange', (channel) => {
@@ -34,6 +46,7 @@ export default function configureSockets(io) {
             });
         });
         }
+        
     });
 }
 
