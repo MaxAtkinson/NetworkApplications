@@ -6,10 +6,12 @@ export default function configureSockets(io) {
     io.on('connection', function (socket) {
         // https://socket.io/docs/emit-cheatsheet/
         var cookieString = socket.handshake.headers.cookie;
-
+     //   console.log(cookieString);
         cookieString = extractAuthCookie(socket.handshake.headers.cookie);
-
+        var user = 1;
+       // console.log(cookieString);
         var user = checkUserAuth(cookieString);
+        //console.log(user);
         if (user !== null)
         {
             socket.join('defaultRoom', () => {
@@ -43,6 +45,10 @@ function getChannel(socket) {
 //if the JWT is valid and. Otherwise returns null.
 function checkUserAuth(cookieString){
     // Verify this is a valid JWT and then decode the JWT to get the user
+    if(cookieString == null){
+        return null;
+    }
+
     if(auth.verifyJWT(jwt, cookieString))
     {
         var user = auth.decodeJWT(jwt, cookieString).payload;
@@ -73,7 +79,7 @@ function extractAuthCookie(cookieString){
     var cookieName = "ChatAppToken=";
     var cookie;
 
-    console.log(cookieString);
+    // console.log(cookieString);
 
     if (cookieString !== "undefined")
     {
