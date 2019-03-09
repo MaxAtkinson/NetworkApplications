@@ -1,5 +1,6 @@
 import auth          from "../auth"
 import jwt           from 'jsonwebtoken'
+import db from '../db';
 
 export default function configureSockets(io) {
     // Set up socket.io handlers
@@ -11,6 +12,7 @@ export default function configureSockets(io) {
         var user = 1;
        // console.log(cookieString);
         var user = checkUserAuth(cookieString);
+        console.log(user);
         //console.log(user);
         if (user !== null)
         {
@@ -24,10 +26,10 @@ export default function configureSockets(io) {
 
                 console.log(this.userboi);
                 var date = new Date()
-
+                var user = checkUserAuth(cookieString);
                 var timestamp = date.getTime()
                 var dbo = db();
-                var myobj ={channelID: getChannel(socket), message: msg, username: "aln2", timestamp: timestamp}
+                var myobj ={channelID: getChannel(socket), message: msg, username: user, timestamp: timestamp}
 
                 dbo.collection("messages").insertOne(myobj, function (err, result) {
                     if (err) throw err;
