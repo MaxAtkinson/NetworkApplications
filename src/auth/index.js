@@ -10,7 +10,7 @@ import { EDESTADDRREQ, ESRCH } from 'constants';
 
 let _client;
 
-export function redisClient() {
+function redisClient() {
     return _client;
 }
 
@@ -18,7 +18,7 @@ export function redisClient() {
 
 
 
-export default function configureAuth(app, jwt, dbUrl) {
+ function configureAuth(app, jwt, dbUrl) {
     const saltRounds = 12;
 
     // Create the redis client
@@ -392,3 +392,8 @@ function decodeJWT(jwt, token) {
     return jwt.decode(token, { complete: true });
 }
 
+module.exports.configureAuth    = configureAuth;
+module.exports.decodeJWT        = decodeJWT;
+module.exports.verifyJWT        = verifyJWT;
+module.exports.createJWT        = createJWT;
+module.exports.redisClient      = redisClient;

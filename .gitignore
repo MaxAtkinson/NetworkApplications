@@ -63,3 +63,7 @@ typings/
 # Transpiled code
 lib/
 dist/
+src/sockets/index_REMOTE_19156.js
+src/sockets/index_LOCAL_19156.js
+src/sockets/index_BASE_19156.js
+src/sockets/index_BACKUP_19156.js
