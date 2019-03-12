@@ -6,16 +6,13 @@ export default function configureSockets(io) {
     // Set up socket.io handlers
     io.on('connection', function (socket) {
         // https://socket.io/docs/emit-cheatsheet/
-        var cookieString = socket.handshake.headers.cookie;
-     //   console.log(cookieString);
-        cookieString = extractAuthCookie(socket.handshake.headers.cookie);
-        var user = 1;
-       // console.log(cookieString);
-        var user = checkUserAuth(cookieString);
-        console.log(user);
+        // var cookieString = socket.handshake.headers.cookie;
+        // var cookieString = extractAuthCookie(cookieString);
+        // var user = checkUserAuth(cookieString)
         //console.log(user);
-        if (user !== null)
-        {
+      
+       // if (user !== null)
+       // {
             socket.join('defaultRoom', () => {
             io.to('defaultRoom').emit('defaultRoomJoined', 'someone joined the room');
             io.to('defaultRoom').emit('message', 'welcome!');
@@ -24,12 +21,16 @@ export default function configureSockets(io) {
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
 
-                console.log(this.userboi);
+               // console.log('...');
+                //console.log(cookieString);
+              //  console.log(user);
+               // console.log(cookieString);
+                //console.log('...');
+     
                 var date = new Date()
-                var user = checkUserAuth(cookieString);
                 var timestamp = date.getTime()
                 var dbo = db();
-                var myobj ={channelID: getChannel(socket), message: msg, username: user, timestamp: timestamp}
+                var myobj ={channelID: getChannel(socket), message: msg, username: "user", timestamp: timestamp}
 
                 dbo.collection("messages").insertOne(myobj, function (err, result) {
                     if (err) throw err;
@@ -47,7 +48,7 @@ export default function configureSockets(io) {
                 });
             });
         });
-        }
+        //}
         
     });
 }
@@ -58,66 +59,74 @@ function getChannel(socket) {
 
 //checkUseAuth takes the JWT in string form and returns the user object with username and email
 //if the JWT is valid and. Otherwise returns null.
-function checkUserAuth(cookieString){
-    // Verify this is a valid JWT and then decode the JWT to get the user
-    if(cookieString == null){
-        return null;
-    }
+// function checkUserAuth(cookieString){
+//     // Verify this is a valid JWT and then decode the JWT to get the user
+//     if(cookieString == null){
+//         return null;
+//     }
 
-    if(auth.verifyJWT(jwt, cookieString))
-    {
-        var user = auth.decodeJWT(jwt, cookieString).payload;
-    
-         // Check that the user's JWT is valid in the redis database
-        if (auth.redisClient().get(user.username, function(err,value) {
-            if (err){
-                console.log("Redis Connection Failed");
-                return;
-                }
-                else if (value != 'valid') {
-                    console.log("User does not have a valid JWT");
-                    return null;
-                }
-                else
-                {
-                        return user;
-                }
-            }));
-    }
-    else
-    {
-        return null;
-    }
-}
+//     if(auth.verifyJWT(jwt, cookieString))
+//     {
+//         var user = auth.decodeJWT(jwt, cookieString).payload;
+  
+//          // Check that the user's JWT is valid in the redis database
+//         if (auth.redisClient().get(user.username, function(err,value) {
+//             if (err){
+//                 console.log("Redis Connection Failed");
+//                 return;
+//                 }
+//                 else if (value != 'valid') {
+//                     console.log("User does not have a valid JWT");
+//                     return null;
+//                 }
+//                 else
+//                 {    console.log('...');
+//                      console.log(user.username);
+//                      console.log('...');
+//                     return user.username;
+//                 }
+//             }));
+//     }
+//     else
+//     {
+//         console.log('user not verified');
+//         return null;
+//     }
+   
+// }
 
-function extractAuthCookie(cookieString){
-    var cookieName = "ChatAppToken=";
-    var cookie;
+// function extractAuthCookie(cookieString){
+//     var cookieName = "ChatAppToken=";
+//     var cookie;
 
-    // console.log(cookieString);
+//     // console.log(cookieString);
 
-    if (cookieString !== "undefined")
-    {
-        // Check that that the string contains the ChatApp token
-        if (cookieString.indexOf(cookieName) !== -1)
-        {
-            console.log("Passed");
-            var startPosition = cookieString.indexOf(cookieName);
+//     if (cookieString !== "undefined")
+//     {
+//         // Check that that the string contains the ChatApp token
+//         if (cookieString.indexOf(cookieName) !== -1)
+//         {
+//             console.log("Passed");
+//             var startPosition = cookieString.indexOf(cookieName);
 
-            cookie = cookieString.substring(startPosition + cookieName.length);
-            console.log(cookie);
-            var endPosition = cookie.indexOf(";");
+//             cookie = cookieString.substring(startPosition + cookieName.length);
+//           //  console.log(cookie);
+//             var endPosition = cookie.indexOf(";");
 
-            if (endPosition !== -1)
-            {
-                cookie = cookie.substring(0,endPosition);
-            } 
-        }
-        else
-        {
-            cookie = null;
-        }
-        return cookie;
-    }
-    return null;
-}
+//             if (endPosition !== -1)
+//             {
+//                 cookie = cookie.substring(0,endPosition);
+//             } 
+
+//         }
+//         else
+//         {   
+//             cookie = null;
+            
+//         }
+//         return cookie;
+        
+//     }
+
+//     return null;
+// }
