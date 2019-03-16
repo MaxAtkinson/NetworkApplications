@@ -250,13 +250,16 @@ class InboundEventHandlers {
         //jquery.empty $chat.empt. $chat.appent, Name time and message build div in jquery 
         
         console.log(msg);
-        $chat.append('<p>' + msg + '</p>');
-        //loadMessagesForChannel()
+        //$chat.append('<p>' + msg + '</p>');
+     
+    
+        // $chat.append(
+        //  '<div class="container2"><p> <h2>'+"username"+'</h2>'+'<br/>'+msg+'</p><span class="time-right">'+ "timeString" +'</span></div>'
+        //  );
 
-      //  $chat.append(
-        // '<div class="container2"><p> <h2>'+"user"+'</h2>'+'<br/>'+msg+'</p><span class="time-right">'+ "timeString" +'</span></div>'
-        // );
-        //Http.loadMessagesForChannel(channelId,DomUtils.addMessagesToChat);
+        DomUtils.updatecss();
+        Http.loadChannels(DomUtils.addChannelsToPanel);
+      
         DomUtils.scrollToBottom();
 
         /*
