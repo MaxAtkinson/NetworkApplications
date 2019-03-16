@@ -164,7 +164,7 @@ class Http {
       $.ajax({
         type:       "GET",
         url:        "/channels/"+channelID+"/messages",
-       // dataType:   "json",
+        dataType:   "json",
        // data:       channelID, //$("#channelForm").serialize(),
 
 
@@ -180,9 +180,40 @@ class Http {
 
               // console.log(data.result[i].message);
                  $chat.empty();
-               for (var i = 0; i<=data.result.length; i++) {
+
+               for (var i = data.result.length-1; i>=0; i--) {
+
+                
+                var user = data.result[i].username;
+                var ts = Number(data.result[i].timestamp);
+                var date = new Date(ts)
+
+                if(date.getUTCMinutes()<10){
+                    var timeString = date.getHours() + ":" + +"0"+date.getUTCMinutes();
+                }else{
+                    var timeString = date.getHours() + ":" + date.getUTCMinutes(); 
+                }
+              
+             
+                var mess = data.result[i].message;
+
                    
-                    $chat.append('<p>' + data.result[i].message + " " + data.result[i].username+ '</p>');
+                    // var display_txt = user + time +  + mess ;
+                    // $chat.html(display_txt).css("color", "blue")
+                  // $chat.append('<p>'  + data.result[i].username +data.result[i].timestamp+'</h2>'+ data.result[i].timestamp+ '<br/>' + data.result[i].message +'</p>');
+
+
+              $chat.append(
+
+             // '<div class="container"><p> <h2>'+user+'</h2>'+'<br/>'+mess+'</p><span class="time-right">'+ timeString +'</span></div>'
+
+              // ' <div id="myDiv" name="myDiv" title="Example Div Element" style="color: #0900C4; font: Arial 12pt;border: 1px solid black;"><h5>'+user+'</h5><p>'+mess+'</p><p>Heres another content article right here.</p></div>'
+              '<div class="container2"><p> <h2>'+user+'</h2>'+'<br/>'+mess+'</p><span class="time-right">'+ timeString +'</span></div>'
+
+                           );
+
+
+
 
                }
                console.log(data.result.length);
@@ -220,6 +251,12 @@ class InboundEventHandlers {
         
         console.log(msg);
         $chat.append('<p>' + msg + '</p>');
+        //loadMessagesForChannel()
+
+      //  $chat.append(
+        // '<div class="container2"><p> <h2>'+"user"+'</h2>'+'<br/>'+msg+'</p><span class="time-right">'+ "timeString" +'</span></div>'
+        // );
+        //Http.loadMessagesForChannel(channelId,DomUtils.addMessagesToChat);
         DomUtils.scrollToBottom();
 
         /*
@@ -242,10 +279,12 @@ class OutboundEventHandlers {
     static handleSendMessage(e) {
         e.preventDefault();
         const message = $input.val();
+  
 
         if (message.trim() !== '') {
             socket.emit('message', message);
             $input.val('');
+           
         }
     }
 

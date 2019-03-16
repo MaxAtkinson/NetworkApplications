@@ -30,7 +30,7 @@ export default function configureSockets(io) {
                 var date = new Date()
                 var timestamp = date.getTime()
                 var dbo = db();
-                var myobj ={channelID: getChannel(socket), message: msg, username: "user", timestamp: timestamp}
+                var myobj ={channelID: getChannel(socket), message: msg, username: "Test Acocunt", timestamp: timestamp}
 
                 dbo.collection("messages").insertOne(myobj, function (err, result) {
                     if (err) throw err;

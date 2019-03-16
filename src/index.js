@@ -96,7 +96,7 @@ var dbo = db();
 var queryID = req.params.id;
 console.log(queryID)
 var dbquery = {channelID: queryID}
-dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: 1 } ).toArray(function (err, result) {
+dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: -1 } ).toArray(function (err, result) {
     if (err) throw err;
   
     res.json({result, status: 200});
