@@ -2,6 +2,7 @@ const socket = io.connect('http://localhost:3000');
 const room = 'defaultRoom';
 let $chat;
 let $input;
+let $globalchannelId;
 
 class DomUtils {
     static scrollToBottom() {
@@ -38,6 +39,7 @@ class DomUtils {
         const $channel = $('#channel' + channelId);
         $allChannels.removeClass('active');
         $channel.addClass('active');
+        $globalchannelId = channelId;
     }
 
     //showRegisterForm hides the login modal and shows the register modal 
@@ -217,6 +219,7 @@ class Http {
 
                }
                console.log(data.result.length);
+               DomUtils.scrollToBottom();
 
                // $chat.append('<p>' + data.+ '</p>');
 
@@ -235,8 +238,8 @@ class Http {
         }
 
     });
-
-
+    
+    
     }
 }
 
@@ -248,19 +251,21 @@ class InboundEventHandlers {
     static handleMessageReceived(msg) {
 
         //jquery.empty $chat.empt. $chat.appent, Name time and message build div in jquery 
-        
-        console.log(msg);
-        //$chat.append('<p>' + msg + '</p>');
+        // console.log('msg boi');
+        // console.log(msg);
+        // console.log('channel boi');
+        // console.log($globalchannelId);
+       // $chat.append('<p>' + msg + '</p>');
      
-    
+       //$.get('/channels/:id/messages',
         // $chat.append(
         //  '<div class="container2"><p> <h2>'+"username"+'</h2>'+'<br/>'+msg+'</p><span class="time-right">'+ "timeString" +'</span></div>'
         //  );
+        Http.loadMessagesForChannel($globalchannelId,DomUtils.addMessagesToChat);
+   //     DomUtils.updatecss();
+      //  Http.loadChannels(DomUtils.addChannelsToPanel);
+      // DomUtils.setActiveChannel($globalchannelId);
 
-        DomUtils.updatecss();
-        Http.loadChannels(DomUtils.addChannelsToPanel);
-      
-        DomUtils.scrollToBottom();
 
         /*
         const $para = $('</p>').text(msg);
@@ -280,9 +285,11 @@ class OutboundEventHandlers {
     }
 
     static handleSendMessage(e) {
+        //console.log('dskjjdsughdujgsijgdrtijhgfijhrtjhurhjtg');
+        // console.log(channelId);
         e.preventDefault();
         const message = $input.val();
-  
+        
 
         if (message.trim() !== '') {
             socket.emit('message', message);
@@ -509,4 +516,5 @@ $(function main() {
     socket.on('connect', InboundEventHandlers.handleConnected);
     socket.on('message', InboundEventHandlers.handleMessageReceived);
     socket.on(`${room}Joined`, console.log);
+    
 });

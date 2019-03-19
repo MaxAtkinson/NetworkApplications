@@ -101,7 +101,7 @@ dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: -1 } ).toA
   
     res.json({result, status: 200});
 
-    console.log(result)
+    // console.log(result)
 });
 
 //console.log(req.body.channelId)
