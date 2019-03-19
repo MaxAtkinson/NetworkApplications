@@ -1,6 +1,7 @@
 import auth          from "../auth"
 import jwt           from 'jsonwebtoken'
 
+
 export default function configureSockets(io) {
     // Set up socket.io handlers
     io.on('connection', function (socket) {
@@ -8,12 +9,12 @@ export default function configureSockets(io) {
         var cookieString = socket.handshake.headers.cookie;
      //   console.log(cookieString);
         cookieString = extractAuthCookie(socket.handshake.headers.cookie);
-        var user = 1;
        // console.log(cookieString);
         var user = checkUserAuth(cookieString);
-        //console.log(user);
+        console.log(user);
         if (user !== null)
         {
+            // console.log(user);
             socket.join('defaultRoom', () => {
             io.to('defaultRoom').emit('defaultRoomJoined', 'someone joined the room');
             io.to('defaultRoom').emit('message', 'welcome!');
@@ -21,9 +22,10 @@ export default function configureSockets(io) {
     
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
-                console.log(getChannel(socket));
-                console.log(msg);
-            });
+              //  console.log(this.username);
+                
+                 console.log(msg);
+            }.bind({username : user}));
     
             socket.on('channelChange', (channel) => {
                 socket.leaveAll();
@@ -51,8 +53,9 @@ function checkUserAuth(cookieString){
 
     if(auth.verifyJWT(jwt, cookieString))
     {
+        
         var user = auth.decodeJWT(jwt, cookieString).payload;
-    
+
          // Check that the user's JWT is valid in the redis database
         if (auth.redisClient().get(user.username, function(err,value) {
             if (err){
@@ -65,6 +68,7 @@ function checkUserAuth(cookieString){
                 }
                 else
                 {
+                        console.log(user);
                         return user;
                 }
             }));

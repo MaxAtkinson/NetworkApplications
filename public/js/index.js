@@ -26,8 +26,15 @@ class DomUtils {
     }
 
     static addMessagesToChat(messages) {
+        let $message = $('<p/>').addClass('message');
+        const $chat = $('#chat');
 
-        console.log(messages);
+        messages.forEach((message) => {
+            $message = $message.clone()
+                .text(message.username + ' : ' + message.text + ' : ' + message.time)
+                .attr('id', 'message' + message._id);
+            $chat.append($message);
+        });
 
 
     }
