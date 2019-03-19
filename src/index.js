@@ -86,77 +86,23 @@ app.post('/channels', (req, res) => {
     //code to emmit new channel   
 });
 
-// app.get('/channels/:id/messages', (req, res) => {
-
-// //==========================
-//     // TODO: DB logic to get last 20 messages from channel with id :id
-//     var dbo = db();
-
-//     const channelId = req.body.channelId;
-//     var myobj = {id: channelId, message:{}};
-//     //{_id: cid, name: cnm, message:{username: usn, body: msg}};
-
-//     // dbo.collection("channels").find(myobj,{ limit: 20 }).toArray(function (err, result) {
-//     //     if (err) throw err;
-//     //     console.log(result);
-//     //     res.json(result);
-//     // });
-
-// //====================
 
 
-//     // dbo.collection("channels").find({}).toArray(function(err, result) {
-//     //     if (err) throw err;
-//     //     console.log(result);
-
-//     //   res.json(result);
-//     //   });
-
-//     // const channelId = req.params.id;
-//     // db.messages.find({ channel: channelId }, { limit: 20}, (err, results) => {
-//     //     if (!err) {
-//     //         res.json(results);
-//     //     } else {
-//     //         res.status(404);
-//     //         res.json(err);
-//     //     }
-//     // });
-
-//     res.json(myobj);
-//     //res.sendStatus(200);
-// });
-
-
-app.post('/channels/:id/messages', (req, res) =>{
+app.get('/channels/:id/messages', (req, res) =>{
     
-//     var cid = req.body.channelId;
-//     var cnm = req.body.channelname;
-//     var usn = req.body.username;
-//     var msg = req.body.message;
+//res.send(req.params);
+var dbo = db();
+var queryID = require('url').parse(req.url).query;
 
-//     myobj ={_id: cid, name: cnm, message:{username: usn, body: msg}};
+var dbquery = {channelID: queryID}
+dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: 1 } ).toArray(function (err, result) {
+    if (err) throw err;
+  //  console.log(result);
+    res.json(result);
+   // console.log(result)
+});
 
-
-//     /*
-//     var message = new Message(req.body)
-//     message.save(err =>{
-//         if(err)
-//             sendStatus(500)
-
-//             Message.findOne({message: 'badword'}, (err, censored) =>{
-//                 if(censored){
-//                     console.log('censored words found')
-//                     Message.deleteOne({_id: censored.id}, (err) =>{
-//                         console.log('removed censored message') 
-//                     })
-//                 }
-//             })
-
-//        // messages.push(req.body)
-//         io.emit('message', req.body)
-//         res.sendStatus(200)
-//     })
-// */
+//console.log(req.body.channelId)
    
 });
 

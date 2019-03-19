@@ -1,5 +1,6 @@
 import auth          from "../auth"
 import jwt           from 'jsonwebtoken'
+import db from '../db';
 
 
 export default function configureSockets(io) {
@@ -12,6 +13,8 @@ export default function configureSockets(io) {
        // console.log(cookieString);
         var user = checkUserAuth(cookieString);
         console.log(user);
+        //console.log(user);
+
         if (user !== null)
         {
             // console.log(user);
@@ -22,10 +25,21 @@ export default function configureSockets(io) {
     
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
-              //  console.log(this.username);
-                
-                 console.log(msg);
-            }.bind({username : user}));
+
+                console.log(this.userboi);
+                var date = new Date()
+                var user = checkUserAuth(cookieString);
+                var timestamp = date.getTime()
+                var dbo = db();
+                var myobj ={channelID: getChannel(socket), message: msg, username: user, timestamp: timestamp}
+
+                dbo.collection("messages").insertOne(myobj, function (err, result) {
+                    if (err) throw err;
+                    //console.log(req.body);
+                });
+                // console.log(getChannel(socket));
+                // console.log(msg);
+            });
     
             socket.on('channelChange', (channel) => {
                 socket.leaveAll();
@@ -36,6 +50,7 @@ export default function configureSockets(io) {
             });
         });
         }
+        
     });
 }
 
