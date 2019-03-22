@@ -2,6 +2,7 @@ const socket = io.connect('http://localhost:3000');
 const room = 'defaultRoom';
 let $chat;
 let $input;
+let $globalchannelId;
 
 class DomUtils {
     static scrollToBottom() {
@@ -11,6 +12,7 @@ class DomUtils {
     static addChannelsToPanel(channels) {
         let $channel = $('<p/>').addClass('channel');
         const $channelPanel = $('#channel-panel');
+        $channelPanel.empty();
 
         channels.forEach((channel) => {
             $channel = $channel.clone()
@@ -44,6 +46,7 @@ class DomUtils {
         const $channel = $('#channel' + channelId);
         $allChannels.removeClass('active');
         $channel.addClass('active');
+        $globalchannelId = channelId;
     }
 
     //showRegisterForm hides the login modal and shows the register modal 
@@ -122,6 +125,7 @@ class Http {
             {
                 // When the status is 200, we have a valid response. I.e.
                 // No server errors. 
+          
                 if (data.status == 200)
                 {
                     // We still need to check that the user variable is not undefined. I.e.
@@ -156,19 +160,77 @@ class Http {
         });
     }
 
-    static loadMessagesForChannel(channelId, onLoad) {
+    static loadMessagesForChannel(channelID,onLoad) {
         // Todo: Use $.ajax here and pass onLoad to its response handler
+
+        // $.get('/channels/'+channelID+'/messages').done(function(data) {
+        //     console.log(data);
+        // }).fail(function(data) {
+        //     console.log('Error: ' + data);
+        // });
+
 
       $.ajax({
         type:       "GET",
-        url:        "/messages",
+        url:        "/channels/"+channelID+"/messages",
         dataType:   "json",
-        data:       channelId,
+       // data:       channelID, //$("#channelForm").serialize(),
+
+
         success: function(data)
         {
+            console.log(data);
             // When the status is 200, we have a valid username and password
             if (data.status == 200)
             {
+               // $('#chat').append(<p> + data.status +"");
+
+              // var i = 0;
+
+              // console.log(data.result[i].message);
+                 $chat.empty();
+
+               for (var i = data.result.length-1; i>=0; i--) {
+
+                
+                var user = data.result[i].username;
+                var ts = Number(data.result[i].timestamp);
+                var date = new Date(ts)
+
+                if(date.getUTCMinutes()<10){
+                    var timeString = date.getHours() + ":" + +"0"+date.getUTCMinutes();
+                }else{
+                    var timeString = date.getHours() + ":" + date.getUTCMinutes(); 
+                }
+              
+             
+                var mess = data.result[i].message;
+
+                   
+                    // var display_txt = user + time +  + mess ;
+                    // $chat.html(display_txt).css("color", "blue")
+                  // $chat.append('<p>'  + data.result[i].username +data.result[i].timestamp+'</h2>'+ data.result[i].timestamp+ '<br/>' + data.result[i].message +'</p>');
+
+
+              $chat.append(
+
+             // '<div class="container"><p> <h2>'+user+'</h2>'+'<br/>'+mess+'</p><span class="time-right">'+ timeString +'</span></div>'
+
+              // ' <div id="myDiv" name="myDiv" title="Example Div Element" style="color: #0900C4; font: Arial 12pt;border: 1px solid black;"><h5>'+user+'</h5><p>'+mess+'</p><p>Heres another content article right here.</p></div>'
+              '<div class="container2"><p> <h2>'+user+'</h2>'+'<br/>'+mess+'</p><span class="time-right">'+ timeString +'</span></div>'
+
+                           );
+
+
+
+
+               }
+               console.log(data.result.length);
+               DomUtils.scrollToBottom();
+
+               // $chat.append('<p>' + data.+ '</p>');
+
+
                 console.log("apparantly it was successful");
             }
             // We have an invalid response to the username and password and display an error message to user
@@ -183,8 +245,8 @@ class Http {
         }
 
     });
-
-
+    
+    
     }
 }
 
@@ -194,10 +256,23 @@ class InboundEventHandlers {
     }
 
     static handleMessageReceived(msg) {
-        
-        console.log(msg);
-        $chat.append('<p>' + msg + '</p>');
-        DomUtils.scrollToBottom();
+
+        //jquery.empty $chat.empt. $chat.appent, Name time and message build div in jquery 
+        // console.log('msg boi');
+        // console.log(msg);
+        // console.log('channel boi');
+        // console.log($globalchannelId);
+       // $chat.append('<p>' + msg + '</p>');
+     
+       //$.get('/channels/:id/messages',
+        // $chat.append(
+        //  '<div class="container2"><p> <h2>'+"username"+'</h2>'+'<br/>'+msg+'</p><span class="time-right">'+ "timeString" +'</span></div>'
+        //  );
+        Http.loadMessagesForChannel($globalchannelId,DomUtils.addMessagesToChat);
+   //     DomUtils.updatecss();
+      //  Http.loadChannels(DomUtils.addChannelsToPanel);
+      // DomUtils.setActiveChannel($globalchannelId);
+
 
         /*
         const $para = $('</p>').text(msg);
@@ -217,12 +292,16 @@ class OutboundEventHandlers {
     }
 
     static handleSendMessage(e) {
+        //console.log('dskjjdsughdujgsijgdrtijhgfijhrtjhurhjtg');
+        // console.log(channelId);
         e.preventDefault();
         const message = $input.val();
+        
 
         if (message.trim() !== '') {
             socket.emit('message', message);
             $input.val('');
+           
         }
     }
 
@@ -306,6 +385,7 @@ class OutboundEventHandlers {
                 console.log(data);
                 $('#loginForm').append("<div class='alert alert-danger' id='loginError'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
                 alert(data.responseText);
+                
             }
 
         });
@@ -387,27 +467,37 @@ class OutboundEventHandlers {
             data:       $("#channelForm").serialize(),
             success: function(data)
             {
+                    console.log(data.message)
+           
                 // When the status is 200, there isn't a duplicate channel
-                if (data.status == 200)
+                if (data.message == 200)
                 {
-
-
+                  //  $("#channel-modal").modal('hide');  
+                    console.log('Channel Created');
+                    Http.loadChannels(DomUtils.addChannelsToPanel);
+                    $("#channel-modal").modal('hide');  
                     // Hide the login modal as we have a valid username and password response
-                    $("#channel-modal").modal('hide');   
+                   
+            
                     
                 }
                 // We have an invalid response to the username and password and display an error message to user
                 else
                 {  
-             //       console.log(data);
-                    $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.success +"</div>");
+                // console.log(data.status);
+                console.log('SUcess Block')
+                    $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.message +"</div>");
+                    Http.loadChannels(DomUtils.addChannelsToPanel);
+                    console.log("Reloading channels")
+                   
                 }
             },
             error: function(data)
             {
+                console.log('error block')
 
-                $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.responseText +"</div>");
-                
+                $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.message +"</div>");
+               
               //  alert(data.responseText);
             }
 
@@ -429,7 +519,9 @@ $(function main() {
     Http.loadChannels(DomUtils.addChannelsToPanel);
     Http.checkLoggedIn();
     window.onresize = DomUtils.updatecss;
+    //edit
     socket.on('connect', InboundEventHandlers.handleConnected);
     socket.on('message', InboundEventHandlers.handleMessageReceived);
     socket.on(`${room}Joined`, console.log);
+    
 });

@@ -57,4 +57,24 @@
     background-color: black;
 }
 
+/* -----------------------------------*/
+.container2 {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    padding: 10px;
+margin: 10px 0;
+  }
+
+.container2::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+  .time-right {
+    float: right;
+    color: #aaa;
+  }
+
 /* https://flatuicolors.com/palette/ca */

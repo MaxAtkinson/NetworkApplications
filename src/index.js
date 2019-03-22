@@ -12,6 +12,7 @@ import configureSockets from './sockets';
 import auth from './auth'
 import db from './db';
 
+
 // Init web app
 const app = express();
 const server = http.Server(app);
@@ -50,15 +51,15 @@ app.get('/channels', (req, res) => {
     });
 });
 
-app.get('/messages',(req, res) => {
-    var dbo = db();
-     dbo.collection("messages").find({_id : require('url').parse(req.url).query}).toArray(function (err, result) {
-         if (err) throw err;
-         console.log(result);
-         res.json(result);
-     });
+// app.get('/messages',(req, res) => {
+//     var dbo = db();
+//      dbo.collection("messages").find({_id : require('url').parse(req.url).query}).toArray(function (err, result) {
+//          if (err) throw err;
+//          console.log(result);
+//          res.json(result);
+//      });
 
-});
+// });
 
 app.post('/channels', (req, res) => {
 
@@ -74,13 +75,13 @@ app.post('/channels', (req, res) => {
 
             dbo.collection("channels").insertOne(myobj, function (err, result) {
                 if (err) throw err;
-                console.log(req.body);
+               // console.log(req.body);
             });
-
-            res.sendStatus(200)
+            
+            res.json({message: 200});
         }
         else {
-            res.send("Duplicate Channel, please pick a unique name");
+            res.json({message: "Channel name taken! Please pick a unique channel name."});
         }
     });
     //code to emmit new channel   
@@ -92,14 +93,15 @@ app.get('/channels/:id/messages', (req, res) =>{
     
 //res.send(req.params);
 var dbo = db();
-var queryID = require('url').parse(req.url).query;
-
+var queryID = req.params.id;
+console.log(queryID)
 var dbquery = {channelID: queryID}
-dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: 1 } ).toArray(function (err, result) {
+dbo.collection("messages").find(dbquery).limit(20).sort( { timestamp: -1 } ).toArray(function (err, result) {
     if (err) throw err;
-  //  console.log(result);
-    res.json(result);
-   // console.log(result)
+  
+    res.json({result, status: 200});
+
+    // console.log(result)
 });
 
 //console.log(req.body.channelId)
