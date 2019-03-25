@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import sanitize from 'sanitize';
 import redis    from 'redis';
 import { EDESTADDRREQ, ESRCH } from 'constants';
+import { runInNewContext } from 'vm';
 
 
 let _client;
@@ -37,10 +38,12 @@ function redisClient() {
     // Set the application to use the sanitizing modules provived by sanitze module
     app.use(sanitize.middleware);
 
-    app.get('/auth/login', (req, res) => {
+    app.get('/auth/login', (req, res, next) => {
         console.log(req.cookies);
         //Get the cookie if it exists then we check if the JWT exists and is valid and then redirect to the homepage
         if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
+          try
+          {
             if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
                 var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
 
@@ -66,8 +69,12 @@ function redisClient() {
                     // User is then within database so redirect to the main page
                     res.redirect('/');
                 });
-
             }
+          }
+          catch (err)
+          {
+              next(err);
+          }
         }
         // User unauthenticated so just return the login page
         else {
@@ -147,7 +154,7 @@ function redisClient() {
                 // We assume that since the verifyJWT passed then the decodedUser's token originated from this server and
                 // and therefore we do not need to check whether the user exists in the database.
 
-                res.cookie('ChatAppToken', { httpOnly: true, expires: new Date(Date.now()) });
+    		res.cookie('ChatAppToken', { httpOnly: true, expires: new Date(Date.now()) });
                 redisClient().get(decodedUser.username, function(err,value) {
                     if (err){
                         res.json({success: "User unable to be logged out", status: "500"});
@@ -411,8 +418,14 @@ function decodeJWT(jwt, token) {
     return jwt.decode(token, { complete: true });
 }
 
+function logErrors(err,req,res,next)
+{
+    console.error(err.stack);
+}
+
 module.exports.configureAuth    = configureAuth;
 module.exports.decodeJWT        = decodeJWT;
 module.exports.verifyJWT        = verifyJWT;
 module.exports.createJWT        = createJWT;
 module.exports.redisClient      = redisClient;
+module.exports.logErrors        = logErrors;

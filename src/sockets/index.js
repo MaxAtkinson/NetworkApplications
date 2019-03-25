@@ -81,7 +81,6 @@ function checkUserAuth(cookieString){
     {
         
         var user = auth.decodeJWT(jwt, cookieString).payload;
-  
          // Check that the user's JWT is valid in the redis database
         if (auth.redisClient().get(user.username, function(err,value) {
             if (err){

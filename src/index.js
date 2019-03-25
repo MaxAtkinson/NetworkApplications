@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(methodOverride());
-app.use(invalidJWTHandler);
+app.use(auth.logErrors);
 
 configureSockets(io);
 auth.configureAuth(app, jwt, dbUrl);
