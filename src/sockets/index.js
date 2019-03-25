@@ -112,7 +112,7 @@ function extractAuthCookie(cookieString){
 
      console.log(cookieString);
 
-    if (cookieString !== "undefined")
+    if (typeof cookieString !== "undefined")
     {
         // Check that that the string contains the ChatApp token
         if (cookieString.indexOf(cookieName) !== -1)
