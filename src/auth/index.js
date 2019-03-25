@@ -147,7 +147,7 @@ function redisClient() {
                 // We assume that since the verifyJWT passed then the decodedUser's token originated from this server and
                 // and therefore we do not need to check whether the user exists in the database.
 
-    
+                res.cookie('ChatAppToken', { httpOnly: true, expires: new Date(Date.now()) });
                 redisClient().get(decodedUser.username, function(err,value) {
                     if (err){
                         res.json({success: "User unable to be logged out", status: "500"});

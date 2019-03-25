@@ -25,6 +25,7 @@ export default function configureSockets(io) {
     
             socket.on('message', (msg) => {
                 io.to(getChannel(socket)).emit('message', msg);
+                console.log("M:" + msg);
                 console.log('we are here');
                // console.log('...');
                 //console.log(cookieString);
