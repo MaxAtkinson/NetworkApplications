@@ -293,7 +293,7 @@ class OutboundEventHandlers {
 
     static handleSendMessage(e) {
         //console.log('dskjjdsughdujgsijgdrtijhgfijhrtjhurhjtg');
-        // console.log(channelId);
+        console.log("Message " + message);
         e.preventDefault();
         const message = $input.val();
         

@@ -296,10 +296,12 @@ function redisClient() {
     // Get used to check whether the user is authenticated and provide user object 
     // information to the client side.
     // This is to be used for disabling elements of the chat client on load of the page
-    app.get('/auth/verifyJWT',function (req,res) {
+    app.get('/auth/verifyJWT',function (req,res, next) {
         // Check whether the provided cookie has a ChatApp Token.
         // If not return a user undefined object
         if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
+            try
+            {
             if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
                 var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
 
@@ -324,6 +326,11 @@ function redisClient() {
                         return;
                     }
                 });
+            }
+            }
+            catch (err)
+            {
+                return next(err);
             }
         }
         // The user hasn't successfully logged in before and therefore send an empty user object.
@@ -384,8 +391,20 @@ function verifyJWT(jwt, token) {
         algorithm: ['RS256']
     }
 
+    jwt.verify(token, PublicKey, signerOptions, function(err,decoded)
+    {
+        if (err)
+        {
+            console.log("")
+        }
+        else
+        {
+            
+        }
 
-    return jwt.verify(token, PublicKey, signerOptions);
+    });
+
+    return ;
 }
 
 function decodeJWT(jwt, token) {

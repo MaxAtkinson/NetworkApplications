@@ -110,7 +110,7 @@ function extractAuthCookie(cookieString){
     var cookieName = "ChatAppToken=";
     var cookie;
 
-    // console.log(cookieString);
+     console.log(cookieString);
 
     if (cookieString !== "undefined")
     {

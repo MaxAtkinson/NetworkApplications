@@ -32,6 +32,7 @@
     "express-validator": "^5.3.1",
     "http": "0.0.0",
     "jsonwebtoken": "^8.4.0",
+    "method-override": "^3.0.0",
     "mongodb": "^3.1.13",
     "redis": "^2.8.0",
     "sanitize": "^2.1.0",

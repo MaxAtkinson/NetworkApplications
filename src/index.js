@@ -2,6 +2,7 @@ import path from 'path';
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
 import session from 'express-session';
 import jwt from 'jsonwebtoken'
 import socketio from 'socket.io';
@@ -11,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import configureSockets from './sockets';
 import auth from './auth'
 import db from './db';
+
 
 
 // Init web app
@@ -27,6 +29,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+
+app.use(methodOverride());
+app.use(invalidJWTHandler);
+
 configureSockets(io);
 auth.configureAuth(app, jwt, dbUrl);
 
@@ -88,6 +94,16 @@ app.post('/channels', (req, res) => {
 });
 
 
+function invalidJWTHandler(err,req,res,next)
+{
+    if (req.xhr)
+    {
+        res.status(500).send({error: "Invalid JWT"});
+    }
+    console.error(err.stack);
+
+
+}
 
 app.get('/channels/:id/messages', (req, res) =>{
     
