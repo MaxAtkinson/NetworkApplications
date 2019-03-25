@@ -2,6 +2,7 @@ import path from 'path';
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
 import session from 'express-session';
 import jwt from 'jsonwebtoken'
 import socketio from 'socket.io';
@@ -27,6 +28,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+
+app.use(methodOverride());
+app.use(auth.logErrors);
+
 configureSockets(io);
 auth.configureAuth(app, jwt, dbUrl);
 

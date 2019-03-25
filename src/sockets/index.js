@@ -80,11 +80,6 @@ function checkUserAuth(cookieString){
     {
         
         var user = auth.decodeJWT(jwt, cookieString).payload;
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> origin/socketio-auth
          // Check that the user's JWT is valid in the redis database
         if (auth.redisClient().get(user.username, function(err,value) {
             if (err){
@@ -96,16 +91,9 @@ function checkUserAuth(cookieString){
                     return null;
                 }
                 else
-<<<<<<< HEAD
                 {
                         console.log(user);
                         return user;
-=======
-                {    //console.log('...');
-                    //  console.log(user.username);
-                    //  console.log('...');
-                    return user;
->>>>>>> origin/socketio-auth
                 }
             }));
     }
@@ -123,7 +111,7 @@ function extractAuthCookie(cookieString){
 
     // console.log(cookieString);
 
-    if (cookieString !== "undefined")
+    if (typeof cookieString !== "undefined")
     {
         // Check that that the string contains the ChatApp token
         if (cookieString.indexOf(cookieName) !== -1)
