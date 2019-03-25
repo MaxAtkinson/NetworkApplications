@@ -293,10 +293,9 @@ class OutboundEventHandlers {
 
     static handleSendMessage(e) {
         //console.log('dskjjdsughdujgsijgdrtijhgfijhrtjhurhjtg');
-        console.log("Message " + message);
         e.preventDefault();
         const message = $input.val();
-        
+        console.log("Message " + message);  
 
         if (message.trim() !== '') {
             socket.emit('message', message);
