@@ -94,17 +94,6 @@ app.post('/channels', (req, res) => {
 });
 
 
-function invalidJWTHandler(err,req,res,next)
-{
-    if (req.xhr)
-    {
-        res.status(500).send({error: "Invalid JWT"});
-    }
-    console.error(err.stack);
-
-
-}
-
 app.get('/channels/:id/messages', (req, res) =>{
     
 //res.send(req.params);

@@ -1,4 +1,4 @@
-const socket = io.connect('http://localhost:3000');
+var socket =  null;
 const room = 'defaultRoom';
 let $chat;
 let $input;
@@ -155,6 +155,9 @@ class Http {
                     {  
                         console.log("User authenticated");
                         DomUtils.enableUserAuthElements(data.user);
+
+                        // Perform a connection the socket io server
+                        setupSockets();
                     }
                 }
                 else
@@ -378,6 +381,9 @@ class OutboundEventHandlers {
                     // Hide the login modal as we have a valid username and password response
                     $("#login-modal").modal('hide'); 
                     DomUtils.enableUserAuthElements();
+
+                    // Enable the socket io 
+                    setupSockets();
                 }
                 // We have an invalid response to the username and password and display an error message to user
                 else
@@ -514,8 +520,12 @@ class OutboundEventHandlers {
     }
 }
 
- function testAlert(){
-    alert("test");
+ function setupSockets(){
+    socket = io.connect('http://localhost:3000');
+    socket.on('connect', InboundEventHandlers.handleConnected);
+    socket.on('message', InboundEventHandlers.handleMessageReceived);
+    socket.on(`${room}Joined`, console.log);
+
 }
 
 
@@ -528,8 +538,8 @@ $(function main() {
     Http.checkLoggedIn();
     window.onresize = DomUtils.updatecss;
     //edit
-    socket.on('connect', InboundEventHandlers.handleConnected);
-    socket.on('message', InboundEventHandlers.handleMessageReceived);
-    socket.on(`${room}Joined`, console.log);
+    //socket.on('connect', InboundEventHandlers.handleConnected);
+    //socket.on('message', InboundEventHandlers.handleMessageReceived);
+    //socket.on(`${room}Joined`, console.log);
     
 });
