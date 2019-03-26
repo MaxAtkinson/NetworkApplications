@@ -11,7 +11,7 @@ class DomUtils {
 
     static addChannelsToPanel(channels) {
         let $channel = $('<p/>').addClass('channel');
-        const $channelPanel = $('#channel-panel');
+        const $channelPanel = $('#child-channel-panel');
         $channelPanel.empty();
 
         channels.forEach((channel) => {
@@ -52,13 +52,16 @@ class DomUtils {
     //showRegisterForm hides the login modal and shows the register modal 
     static showRegisterForm()
     {
+        $("#unauth-modal").modal('hide');
         $("#login-modal").modal('hide');   
         $("#register-modal").modal('show');   
     }
 
     static showLoginForm()
     {
-        $("#unauth-modal").modal('hide');   
+        $("#unauth-modal").modal('hide'); 
+        $("#register-modal").modal('hide');
+        $("#register-confirm-modal").modal('hide');  
         $("#login-modal").modal('show');   
     }
 
@@ -75,7 +78,9 @@ class DomUtils {
         // Disable the add channel button
         $("#channel-button").prop('hidden', false);
 
-        // Add logged in a user element
+        //Enabled User Login
+        $("#chat").prop('hidden', false);
+        $("#channel-panel").prop('hidden', false);
 
         // Change the login button to a logout button
         $("#logout-btn").prop('hidden', false);
@@ -96,6 +101,14 @@ class DomUtils {
 
         // hide the add channel button
         $("#channel-button").prop('hidden', true);
+
+        // Disable the chat window so no messages are displayed when the user is
+        // not authenticated
+        $("#chat").prop('hidden',true);
+
+        // Disable the channel window so when user is not authenticated they can't
+        // access the channels
+        $("#channel-panel").prop('hidden', true);
 
         // Change the Logout Button to login button
         $("#logout-btn").prop('hidden', true);
@@ -118,9 +131,11 @@ class Http {
     // Calling a AJAX get to check for the 
     static checkLoggedIn(onLoad) {
         // Submit the form with AJAX and then 
+        console.log("Check Logged in");
         $.ajax({
             type:       "GET",
             url:        "auth/verifyJWT",
+            dataType:   "json",
             success: function(data)
             {
                 // When the status is 200, we have a valid response. I.e.
@@ -131,14 +146,13 @@ class Http {
                     // We still need to check that the user variable is not undefined. I.e.
                     if (!('user' in data))
                     {
-                        DomUtils.disableUserAuthElements();
                         console.log("User unauthenticated");
+                        DomUtils.disableUserAuthElements();
                     }
                     // The user has a valid JWT token and therefore is authenticated.
                     // User logged in
                     else
                     {  
-                        console.log(data);
                         console.log("User authenticated");
                         DomUtils.enableUserAuthElements(data.user);
                     }
@@ -295,7 +309,7 @@ class OutboundEventHandlers {
         //console.log('dskjjdsughdujgsijgdrtijhgfijhrtjhurhjtg');
         e.preventDefault();
         const message = $input.val(); 
-
+        console.log(message);
         if (message.trim() !== '') {
             socket.emit('message', message);
             $input.val('');
@@ -305,6 +319,7 @@ class OutboundEventHandlers {
 
     static logout()
     {
+        console.log("Logging user out")
         $.ajax({
             type: "POST",
             url:  "auth/logout",
@@ -318,9 +333,6 @@ class OutboundEventHandlers {
                     console.log("Logout succcessful");
                     DomUtils.disableUserAuthElements();
                     
-                    // Delete the ChatApp JWT Token as this is what is identifiyign users. This is stored as a cookie
-                    // The server should have blacklisted it anyway
-                    document.cookie = "ChatAppToken= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
                 }
                 // The user was never authenticated or had a valid JWT. Therefore we assume that they are logged out.
                 else
@@ -328,9 +340,6 @@ class OutboundEventHandlers {
                     console.log("Error: " + data.success);
                     DomUtils.disableUserAuthElements();
                     
-                    // Delete the ChatApp JWT Token as this is what is identifiyign users. This is stored as a cookie
-                    // The server should have blacklisted it anyway
-                    document.cookie = "ChatAppToken" + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
                 }
             },
             error : function(data)
@@ -363,7 +372,8 @@ class OutboundEventHandlers {
                 if (data.status == 200)
                 {
                     // Reset the contents of the form since it may be used later
-
+                    $("#email").val("");
+                    $("#password").val("");
 
                     // Hide the login modal as we have a valid username and password response
                     $("#login-modal").modal('hide'); 
@@ -410,11 +420,14 @@ class OutboundEventHandlers {
                     if (data.status == 200)
                     {
                         // Reset the contents of the form incase this is used later
-    
+                        $("#registerEmail").val("");
+                        $("#registerUsername").val("");
+                        $("#registerPassword").val("");
+                        $("#registerconfirmPassword").val("");
     
                         // Hide the login modal as we have a valid username and password response
                         $("#register-modal").modal('hide');   
-                        $("#success-register-modal").modal('show');
+                        $("#register-confirm-modal").modal('show');
                         
                     }
                     // We have an invalid response to the username and password and display an error message to user
@@ -422,9 +435,6 @@ class OutboundEventHandlers {
                     {  
                         console.log(data);
                         $('#registerForm').append("<div class='alert alert-danger'  id='registerError'><strong>Error: </strong>" + data.success +"</div>");
-                        //Reset the password field
-                        $('#registerPassword').val(''); 
-                        $('#registerConfir')
                     }
                 },
                 error: function(data)

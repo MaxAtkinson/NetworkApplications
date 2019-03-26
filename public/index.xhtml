@@ -38,7 +38,11 @@
 
                 <div id="channel-panel" class="col-md-2">
                     <h1>Channels</h1>
+                    <div id="child-channel-panel">
+                           
+                    </div>
                 </div>
+     
 
                 <div id="chat" class="col-md-10">
                     <h1>Messages</h1>
@@ -68,12 +72,14 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Welcome to Chatapp</h4>
+                            <h4 class="modal-title">Welcome to CoolChat</h4>
                         </div>
                         <div class="modal-body>">
-                            <p>Random Words</p>
+                            <p>Login to view and use chat channels.</p>
+                            <p>Users need to register to use this site.</p>
                         </div>
                         <div class="modal-footer">
+                                <button type="button" class="btn btn-default" onclick="DomUtils.showRegisterForm()">Register</button>
                                 <button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button>
                             <!--<button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button> -->
                         </div>
@@ -86,7 +92,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Login to Chatapp</h4>
+                            <h4 class="modal-title">Login to CoolChat</h4>
                         </div>
                         <div class="modal-body>">
                             <form id="loginForm" name="loginForm">
@@ -114,7 +120,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Register for Chatapp</h4>
+                            <h4 class="modal-title">Register for CoolChat</h4>
                         </div>
                         <div class="modal-body>">
                             <form id="registerForm" name="registerForm">
@@ -152,10 +158,11 @@
                             <h4 class="modal-title">Success</h4>
                         </div>
                         <div class="modal-body>">
-                            <p>Registration Successful</p>
+                            <p>Registration Successful.</p>
+                            <p>Now login to access CoolChat</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+                            <button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button>
                         </div>
                     </div>
                 </div>

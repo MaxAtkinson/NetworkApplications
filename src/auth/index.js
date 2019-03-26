@@ -146,27 +146,32 @@ function redisClient() {
 
     app.post('/auth/logout', function(req,res)
     {  
+        console.log("Logout started");
         // Check the user's JWT to get user infomation
         if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
             if (verifyJWT(jwt, req.cookies['ChatAppToken'])) {
                 var decodedUser = decodeJWT(jwt, req.cookies['ChatAppToken']).payload;
 
+                console.log("Resetting cookie");
                 // We assume that since the verifyJWT passed then the decodedUser's token originated from this server and
                 // and therefore we do not need to check whether the user exists in the database.
 
-    		res.cookie('ChatAppToken', { httpOnly: true, expires: new Date(Date.now()) });
+    		    res.cookie('ChatAppToken'," ",{ httpOnly: true, expires: new Date(Date.now()) });
                 redisClient().get(decodedUser.username, function(err,value) {
                     if (err){
+                        console.log("User unable to be logged out on server");
                         res.json({success: "User unable to be logged out", status: "500"});
                         return;
                     }
                     else {
                         redisClient().set(this.username,"invalid", function(err,value){
                             if (err){
+                                console.log("User unable to be logged out on server");
                                 res.json({success: "User unable to be logged out", status: "500"});
                                 return;
                             }
                             else{
+                                console.log("User logged out on server");
                                 res.json({success: "User logged out", status: 200});
                                 return;
                             }
@@ -174,6 +179,11 @@ function redisClient() {
                     }
                 }.bind({ username: decodedUser.username}));
             }
+        }
+        else
+        {
+            console.log("User unable to be logged out due to cookie");
+            res.json({success: "User unable to be logged out. Cookie invalid"});
         }
     });   
 
@@ -211,6 +221,7 @@ function redisClient() {
         {
             // Status 202 is used to notify the client side
             res.json({success: "Username Length is too short. Usernames are required to be 3 characters long" , status:202 });
+            console.log("Sent headers  - Username Lenth ");
             return;
         }
         
@@ -218,12 +229,13 @@ function redisClient() {
 
         // The email is required to be an email format
         // Can't be clever with the regular expressions for checking whether the correct format since we now have .local type
-        // TLDs now
+        // TLDs can be anything now
         var emailRegex = new RegExp("/\S+@\S+/");
 
         if ((emailRegex.test(email.toLowerCase())))
         {
             // Status 202 is used to notify the client side of the error 
+            console.log("Sent headers  - Email not an email address");
             res.json({success: "Email Address entered is not in an email address format." , status:202 });
             return;
         }
@@ -233,13 +245,17 @@ function redisClient() {
         // Check that the password entered of a length of 5 characters
         if (password.length < 5)
         {
+            console.log("Sent headers  - Password Length");
             res.json({success: "Password length is too short. Passwords are required to be at least 5 characters", status: 202});
+            return;
         } 
 
     
         //check that both passwords were valid
         if (password != confirmPassword) {
+            console.log("Sent headers  - Passwords don't match");
             res.json({success: "Password and Confirm Password are not the same. Renter and then resubmit", status: 202});
+            return;
         }
 
         
@@ -257,6 +273,7 @@ function redisClient() {
                 console.log('Users:');
                 console.log(result);
                 if (result[0]) {
+                    console.log("Sent headers  - Username exists");
                     res.json({success: "This username is already used. Please select another.", status: 202});
                     return;
                 }
@@ -269,6 +286,7 @@ function redisClient() {
                     console.log('Email:');
                     console.log(result);
                     if (result[0]) {
+                        console.log("Sent headers  - Email address exists");
                         res.json({success: "This email address is already in use. Reset your password", status: 202});
                         return;
                     }
@@ -304,6 +322,7 @@ function redisClient() {
     // information to the client side.
     // This is to be used for disabling elements of the chat client on load of the page
     app.get('/auth/verifyJWT',function (req,res, next) {
+        console.log("Verifiying JWT");
         // Check whether the provided cookie has a ChatApp Token.
         // If not return a user undefined object
         if (!(typeof req.cookies['ChatAppToken'] === 'undefined')) {
@@ -337,6 +356,7 @@ function redisClient() {
             }
             catch (err)
             {
+                console.log("Error with JWT");
                 return next(err);
             }
         }
@@ -397,24 +417,23 @@ function verifyJWT(jwt, token) {
         expiresIn: '12h',
         algorithm: ['RS256']
     }
+    var jwtResult;
 
-    jwt.verify(token, PublicKey, signerOptions, function(err,decoded)
+    try
     {
-        if (err)
-        {
-            console.log("")
-        }
-        else
-        {
-            
-        }
+        jwtResult =  jwt.verify(token, PublicKey, signerOptions);
+        return jwtResult
+    }
+    catch (e)
+    {
+        console.log(e);
+        return false;
+    }
 
-    });
-
-    return ;
 }
 
 function decodeJWT(jwt, token) {
+    console.log("Decode JWT");
     return jwt.decode(token, { complete: true });
 }
 
