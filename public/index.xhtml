@@ -20,7 +20,7 @@
                 <div class="navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Settings</a>
+                            <a class="nav-link btn" onclick="OutboundEventHandlers.showUpdateUserForm()">Settings</a>
                         </li>
                         <li class="nav-item">
                             <button id="login-btn" class="nav-link btn" data-toggle="modal" data-target="#login-modal">Login</button>
@@ -163,6 +163,45 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-success" onclick="DomUtils.showLoginForm()">Login</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update User Details Form Modal-->
+            <div class="modal fade" id="update-user-modal" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Update Password</h4>
+                        </div>
+                        <div class="modal-body>">
+                            <form id="updateUserForm" name="updateUserForm">
+                                    <div class = "form-group">
+                                        <label for="changeEmail">Email:</label>
+                                        <input type="email" class="form-control" name="email" id="changeEmail" readonly="readonly"></input>
+                                    </div>
+                                    <div class = "form-group">
+                                            <label for="changeUsername">Username:</label>
+                                            <input type="text" class="form-control" name="username" id="changeUsername"  readonly="readonly"></input>
+                                        </div>
+                                    <div class = "form-group">
+                                            <label for="changeOldPassword"> Old Password:</label>
+                                            <input type="password" class="form-control" name="password" id="changeOldPassword" placeholder="Password"></input>
+                                    </div>
+                                    <div class = "form-group">
+                                        <label for="changeNewPassword">New Password:</label>
+                                        <input type="password" class="form-control" name="newPassword" id="changeNewPassword" placeholder="Password"></input>
+                                    </div>
+                                    <div class = "form-group">
+                                        <label for="changeconfirmNewPassword">Confirm New Password:</label>
+                                        <input type="password" class="form-control" name="confirmNewPassword" id="changeconfirmNewPassword" placeholder="Confirm Password"></input>
+                                    </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" value="submit" class="btn btn-success" onclick="OutboundEventHandlers.updateUserFormSubmit()">Update</button>
                         </div>
                     </div>
                 </div>

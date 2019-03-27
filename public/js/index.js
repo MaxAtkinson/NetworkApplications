@@ -454,8 +454,61 @@ class OutboundEventHandlers {
     }
 
     // Update user details allows the user to change their username and password within the system
-    static updateUserFormSubmit()
+    static showUpdateUserForm()
     {
+        console.log("Getting user info");
+        $.ajax({
+            type:       "GET",
+            url:        "auth/verifyJWT",
+            dataType:   "json",
+            success: function(data)
+            {
+                // When the status is 200, we have a valid response. I.e.
+                // No server errors. 
+                  
+                if (data.status == 200)
+                {
+                    console.log("About to print the data returned");
+                    console.log(data);
+                    // We still need to check that the user variable is not undefined. I.e.
+                    if (!('user' in data))
+                    {
+                                //No point displaying anything unless they are authenticated
+                                console.log("User unauthenticated");
+                    }
+                    // The user has a valid JWT token and therefore is authenticated.
+                    // User logged in, display their details in the form
+                    else
+                    {  
+                        console.log("User authenticated");
+                         $('#changeEmail').val(data.user.email);
+                        $('#changeUsername').val(data.user.username);
+                        $('#changePassword').val("");
+                        $('#changeconfirmPassword').val("");
+                        $('#update-user-modal').modal("show");
+
+                    }
+                }
+                else
+                {
+                    //No point displaying anything unless they are authenticated
+                    console.log("User unauthenticated");
+                }
+            },
+            error: function(data)
+            {
+                // We disable DOM elements for sending messages
+                console.log("AJAX Response Invalid");
+        
+            }
+        
+            });
+    
+    }
+
+    
+    static updateUserFormSubmit(){
+        console.log("updateUserForm");
         $.ajax({
             type:       "POST",
             url:        "auth/updateuser",
@@ -463,14 +516,35 @@ class OutboundEventHandlers {
             data:       $("#updateUserForm").serialize(),
             success: function(data)
             {
+                // When the status is 200, we have a valid username and password
+                if (data.status == 200)
+                {
+                    if ($('#updateError').length == 0)
+                    {
+                        $('#updateUserForm').append("<div class='alert alert-danger' id='updateError'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                    }
 
+                    $('#updateError').removeClass('alert-danger');
+                    $('#updateError').addClass('alert-success');
+                    $('#updateError').text('Password changed successfully');
+                    
+                }
+                // We have an invalid response to the password and display an error message to user
+                else
+                {  
+                    console.log(data);
+                    $('#updateUserForm').append("<div class='alert alert-danger'  id='updateError'><strong>Error: </strong>" + data.success +"</div>");
+                }
             },
             error: function(data)
             {
-
+                console.log(data);
+                $('#updateUserForm').append("<div class='alert alert-danger' id='updateError'><strong>Error: </strong>" + "AJAX Submission Failed" +"</div>");
+                alert(data.responseText);
             }
-        });
+        })
     }
+    
 
     static addchannel(){
         
@@ -489,6 +563,12 @@ class OutboundEventHandlers {
                   //  $("#channel-modal").modal('hide');  
                     console.log('Channel Created');
                     Http.loadChannels(DomUtils.addChannelsToPanel);
+
+                    if ($('#newChannelError').length)
+                    {
+                        $('#newChannelError').remove();
+                    }
+                    $("#channelname").val("");
                     $("#channel-modal").modal('hide');  
                     // Hide the login modal as we have a valid username and password response
                    
@@ -500,7 +580,11 @@ class OutboundEventHandlers {
                 {  
                 // console.log(data.status);
                 console.log('SUcess Block')
-                    $('#channelForm').append("<div class='alert alert-danger'><strong>Error: </strong>" + data.message +"</div>");
+                    if ($('#newChannelError').length === 0)
+                    {
+                        $('#channelForm').append("<div id='newChannelError' class='alert alert-danger'><strong>Error: </strong>" + data.message +"</div>");
+                    }
+
                     Http.loadChannels(DomUtils.addChannelsToPanel);
                     console.log("Reloading channels")
                    
@@ -525,7 +609,6 @@ class OutboundEventHandlers {
     socket.on('connect', InboundEventHandlers.handleConnected);
     socket.on('message', InboundEventHandlers.handleMessageReceived);
     socket.on(`${room}Joined`, console.log);
-
 }
 
 

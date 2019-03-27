@@ -117,7 +117,7 @@ function redisClient() {
                     if (result == true) {
                         // Create a valid JWT token for the user and then store this in an http cookie on user side
                         var token = createJWT(jwt, this.user);
-                        res.cookie('ChatAppToken', token, { httpOnly: true, }); // Need to add the secure bit here when we come to SSL connections
+                        res.cookie('ChatAppToken', token, { httpOnly: true, expires: new Date(Date.now() + (60*60*12*1000))}); // Need to add the secure bit here when we come to SSL connections
 
                         console.log(' was successful');
                         res.json({ success: 'Login Successful', status: 200 });
@@ -370,14 +370,153 @@ function redisClient() {
     // Updateuser form submission. Used for updating a user's details within the system
     app.post('/auth/updateuser', function(req, res)
     {
+        // If we don't have all the fields then we don't have a valid post and send a request error to the 
+        // client
+        if ((!req.body.username) || (!req.body.email)) 
+        {
+            res.json({success: "Incorrect Request", status: 400});
+            return;
+        }
 
+        if ((typeof req.cookies['ChatAppToken'] === 'undefined')) 
+        {
+            res.json({success: "Not Valid JWT", status: 401});
+            return;
+        }
 
+        // First sanitise the fields and perform error correction
+        // Uses the node-sanitize module to strip the data
+        var username        = req.bodyString('username');
+        var email           = req.bodyEmail('email');
+        var password        = req.bodyString('password');
+        var newPassword     = req.bodyString('newPassword')
+        var newConfirmPassword = req.bodyString('confirmNewPassword');
 
+        console.log("username" + username);
+        console.log("email" + email);
+        console.log("password" + password);
+        console.log("newPassword" + newPassword);
+        console.log("newConfirmPassword" + newConfirmPassword);
+
+        if (username.length < 3)
+        {
+            // Status 202 is used to notify the client side
+            res.json({success: "Username Length is too short. Usernames are required to be 3 characters long" , status:202 });
+            console.log("Sent headers  - Username Lenth ");
+            return;
+        }
+
+        // The email is required to be an email format
+        // Can't be clever with the regular expressions for checking whether the correct format since we now have .local type
+        // TLDs can be anything now
+        var emailRegex = new RegExp("/\S+@\S+/");
+
+        if ((emailRegex.test(email.toLowerCase())))
+        {
+            // Status 202 is used to notify the client side of the error 
+            console.log("Sent headers  - Email not an email address");
+            res.json({success: "Email Address entered is not in an email address format." , status:202 });
+            return;
+        }
+        
+        // Check that the password entered of a length of 5 characters
+        if ((password.length < 5) && (password.length != 0))
+        {
+            console.log("Sent headers  - Password Length");
+            res.json({success: "Current Password length is too short. Passwords are required to be at least 5 characters", status: 202});
+            return;
+        } 
+
+        // Check that the password entered of a length of 5 characters
+        if ((newPassword.length < 5) && (newPassword.length != 0)) 
+        {
+            console.log("Sent headers  - Password Length");
+            res.json({success: "New Password length is too short. Passwords are required to be at least 5 characters", status: 202});
+            return;
+        } 
+
+        // Check that the password entered of a length of 5 characters
+        if ((newConfirmPassword.length) < 5 && (newPassword.length != 0))
+        {
+            console.log("Sent headers  - Password Length");
+            res.json({success: "Confirm Password length is too short. Passwords are required to be at least 5 characters", status: 202});
+            return;
+        } 
+
+        //check that both passwords were valid
+        if (newPassword != newConfirmPassword) {
+            console.log("Sent headers  - Passwords don't match");
+            res.json({success: "Password and Confirm Password are not the same. Renter and then resubmit", status: 202});
+            return;
+        }
+
+        // Connect to the database
+        var dbo = db();
+
+        // Check whether the user has the correct username and password
+        var query = {}
+        query['email'] = email;
+        dbo.collection('users').find(query).toArray(function (error, result) {
+            if (error) 
+            {
+                console.log('Database query error');
+                return;
+            }
+
+            if (result.length != 1) {
+                console.log('User not database')
+                res.json({ success: 'Incorrect Username/Password', status: 401 });
+                return;
+            }
+                
+            console.log('login for user: ' + result[0].username);
+            bcrypt.compare(password, result[0].password, function (error, result) {
+                if (error) {
+                    res.json({ success: 'Hashing Error', status: 500 });
+                    console.log('Hashing error\n\r');
+                    return;
+                }
+
+                if (!result)
+                {
+                    res.json({ success: 'Incorrect Username/Password', status: 401 });
+                }
+                else
+                // Perform any update operations
+                {
+                    // Update to the new password if required
+                    if (newPassword != "")
+                    {
+                        //BCrypt the password into a hash and then create the user
+                        bcrypt.hash(newPassword, saltRounds, function (error, hashResult) {
+
+                            var query = { username: username };
+                            var newvalues = { $set:{password: hashResult}};
+                            // Create the new user
+                            dbo.collection('users').updateOne(query,newvalues ,function (error, result) {
+                                if (error) {
+                                    console.log(error);
+                                    res.json({success: "Problem updating password", status: 500});
+                                    return;
+                                }
+                                else {
+                                    console.log("updated user's password")
+                                    res.json({success: "Password successfully changed", status:200});
+                                }
+
+                            });
+                        });
+                    }
+                    else
+                    {
+                        console.log("Didn't hit the new password hashing");
+                    }
+                }
+
+            });
+        });
     });
-
 }
-
-
 
 
 // initialiseJWT imports the private and public key into the node.js script
