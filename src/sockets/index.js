@@ -1,3 +1,15 @@
+/* sockets/index.js
+/-----------------------------------------------------------------------------
+// Author : Andrew Nolan, Max Atkinson ,Angus Cameron, Bruce Thomson    
+//----------------------- ----------------------------------------------------
+// Purpose: Node.js server side code for configuring the socket connection for
+			each channel with the client. Only performs connection when user 
+			has valid JWT auth token
+			
+	Requires: db jsonwebtoken
+//-----------------------------------------------------------------------------
+*/
+
 import auth          from "../auth"
 import jwt           from 'jsonwebtoken'
 import db from '../db';

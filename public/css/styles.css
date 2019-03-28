@@ -1,3 +1,13 @@
+/* public/css/styles.css
+-----------------------------------------------------------------------------
+Author : Andrew Nolan, Max Atkinson ,Angus Cameron, Bruce Thomson  
+----------------------- ----------------------------------------------------
+Purpose: Casscading Stylesheets File containng colour, font, alignment attributes
+		 for index.xhtml
+		
+-----------------------------------------------------------------------------
+
+*/
 #chat {
 
     overflow-y: auto;

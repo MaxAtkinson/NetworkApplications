@@ -1,3 +1,17 @@
+/* auth/index.js
+/-----------------------------------------------------------------------------
+// Author : Andrew Nolan, Max Atkinson ,Angus Cameron, Bruce Thomson  
+//----------------------- ----------------------------------------------------
+// Purpose: Node.js server side code for
+			- setup calls from client for login, register, and logging out users
+			- handles authentication of JWTs with public and private keys stored
+			  in external files.
+			- Uses bcrypt with 512 bit keys for encryption and 12 salt rounds
+		
+	Requires: bcrypt, sanitize, redis, mongodb
+//-----------------------------------------------------------------------------
+*/
+
 import { MongoClient } from 'mongodb';
 import fs from 'fs';
 import path from 'path';

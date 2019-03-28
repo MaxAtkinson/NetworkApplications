@@ -1,3 +1,18 @@
+/* index.js
+/-----------------------------------------------------------------------------
+// Author : Andrew Nolan, Max Atkinson ,Angus Cameron, Bruce Thomson   
+//----------------------- ----------------------------------------------------
+// Purpose: Node.js server side code to setup:
+			- Routing channels for client side calls
+			- Configuring Authentication
+			- Configuring connection to database
+			- Serving up last 20 databases
+			
+	Requires: express, socketio, jswonwebtoken, body-parser, method-override, 
+			  cookie-parser
+//-----------------------------------------------------------------------------
+*/
+
 import path from 'path';
 import http from 'http';
 import express from 'express';

@@ -1,3 +1,19 @@
+/* public/js/index.js
+/-----------------------------------------------------------------------------
+// Author : Andrew Nolan, Max Atkinson ,Angus Cameron, Bruce Thomson  
+//----------------------- ----------------------------------------------------
+// Purpose: Client side Javascript code for:
+			- dynamically changing content within index.xhtml. I.e disabling
+			  and enabling elements.
+			- Configuring connection to socket io server from the client
+			- Updating index.xhtml with incomming messages from the current channel
+			- Performing AJAX submissions to server side for login, logout, verifyingJWTs,
+			  updating user passwords, registering 
+		
+   Requires: jQuery and Socket.io.client
+//-----------------------------------------------------------------------------
+*/
+
 var socket =  null;
 const room = 'defaultRoom';
 let $chat;
